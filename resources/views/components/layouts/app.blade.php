@@ -1,7 +1,14 @@
 <!DOCTYPE html>
 <html lang="en" 
-      x-data="themeStore()" 
+      {{-- x-data="themeStore()" 
       x-init="init()" 
+      :class="{ 'dark': dark }"> --}}
+
+      x-data="{ dark: true, sidebarOpen: true }" 
+      x-init="
+        const saved = localStorage.getItem('theme');
+        dark = saved !== 'light';
+      "
       :class="{ 'dark': dark }">
 
 <head>
