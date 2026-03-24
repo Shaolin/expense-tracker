@@ -38,6 +38,14 @@ Route::get('/categories', function () {
     return view('categories.index');
 })->name('categories.index');
 
+
+Route::get('/budget', function () {
+    return view('budget.index');
+})->name('budget.index');
+
+
+
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
