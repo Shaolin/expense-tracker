@@ -1,24 +1,29 @@
 <!DOCTYPE html>
-<html lang="en" 
-      {{-- x-data="themeStore()" 
-      x-init="init()" 
-      :class="{ 'dark': dark }"> --}}
-
-      x-data="{ dark: true, sidebarOpen: true }" 
-      x-init="
-        const saved = localStorage.getItem('theme');
-        dark = saved !== 'light';
-      "
-      :class="{ 'dark': dark }">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <title>Expense Tracker</title>
     @vite('resources/css/app.css')
     <script defer src="https://unpkg.com/alpinejs"></script>
+    <script>
+        if (localStorage.getItem('theme') === 'dark') {
+            document.documentElement.classList.add('dark');
+        }
+    </script>
 </head>
 
-<body class="bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-200">
+<body 
+
+x-data="{ dark: true, sidebarOpen: true }" 
+x-init="
+  const saved = localStorage.getItem('theme');
+  dark = saved !== 'light';
+"
+:class="{ 'dark': dark }"
+
+class="bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-200">
+   
 
 <div class="flex h-screen overflow-hidden">
 
@@ -32,8 +37,9 @@
         <x-navbar />
 
         <!-- Page Content -->
+        
         <main class="p-6 overflow-y-auto">
-            {{ $slot }}
+            @yield('content')
         </main>
 
     </div>
@@ -56,7 +62,9 @@ function themeStore() {
         }
     }
 }
+
 </script>
+@stack('scripts')
 
 </body>
 </html>

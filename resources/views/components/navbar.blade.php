@@ -27,6 +27,7 @@
             <span x-show="dark">🌙</span>
             <span x-show="!dark">☀️</span>
         </button>
+       
 
         <!-- Profile -->
         <button class="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">

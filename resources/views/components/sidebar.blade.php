@@ -23,11 +23,13 @@
             <span x-show="sidebarOpen" x-transition>Dashboard</span>
         </a>
 
-        <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800">
-            {{-- <span>💸</span> --}}
-            <x-icon name="expenses" />
-            <span x-show="sidebarOpen" x-transition>Expenses</span>
-        </a>
+        
+        <a href="{{ route('expenses.index') }}" 
+   class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800">
+     {{-- <span>💸</span> --}}
+    <x-icon name="expenses" />
+    <span x-show="sidebarOpen" x-transition>Expenses</span>
+</a>
 
         <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800">
             {{-- <span>💰</span> --}}

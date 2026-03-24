@@ -1,109 +1,125 @@
-<x-layouts.app>
+@extends('layouts.app')
 
-    <!-- Header -->
-    <div class="mb-6">
+@section('content')
+<div class="p-6 space-y-6 bg-black min-h-screen">
+
+     <!-- Header -->
+     <div class="mb-6">
         <h1 class="text-3xl font-bold">Dashboard</h1>
         <p class="text-gray-400">Overview of your financial activity this month</p>
     </div>
 
-    <!-- Stats -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-
-        <x-stat-card 
-            title="Total Income" 
-            amount="$5,725.00" 
-            change="+12.5% from last month"
+    <!-- Top Stat Cards -->
+    
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <x-dashboard.stat-card 
+        title="Total Income" 
+        amount="$5,725.00" 
+        change="+12.5% from last month"
+        color="green"
+        icon="income"
         />
 
-        <x-stat-card 
-            title="Total Expenses" 
-            amount="$1,073.02" 
-            change="-8.2% from last month"
-            :positive="false"
+        <x-dashboard.stat-card 
+        title="Total Expenses" 
+        amount="$1,073.02" 
+        change="-8.2% from last month"
+        :positive="false"
+        color="red"
+        icon="expenses"
         />
 
-        <x-stat-card 
-            title="Current Balance" 
-            amount="$4,651.98" 
-            change=""
+        <x-dashboard.stat-card 
+        title="Current Balance" 
+        amount="$4,651.98"
+        color="blue"
+        icon="balance"
         />
 
-        <x-stat-card 
-            title="Savings Rate" 
-            amount="81%" 
-            change="+5.3% improvement"
+        <x-dashboard.stat-card 
+        title="Savings Rate" 
+        amount="81%" 
+        change="+5.3% improvement"
+        color="purple"
+        icon="savings"
         />
-
     </div>
 
     <!-- Charts Section -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <x-dashboard.chart-card />
 
-        <!-- Chart Placeholder -->
-        <div class="bg-white dark:bg-gray-900 p-6 rounded-xl border border-gray-200 dark:border-gray-800 p-6 rounded-xl border">
-            <h2 class="mb-4">Expenses by Category</h2>
-            <div class="h-64 flex items-center justify-center text-gray-500">
-                Chart goes here
-            </div>
-        </div>
-
-        <!-- Budget -->
-       
-            <div class="bg-white dark:bg-gray-900 p-6 rounded-xl border border-gray-200 dark:border-gray-800 p-6 rounded-xl border">
-            <h2 class="mb-4">Budget Status</h2>
-
-            <div class="space-y-4">
-
-                <div>
-                    <div class="flex justify-between text-sm">
-                        <span>Food & Dining</span>
-                        <span>$268 / $800</span>
-                    </div>
-                    <div class="w-full bg-gray-800 h-2 rounded mt-1">
-                        <div class="bg-green-500 h-2 rounded w-1/3"></div>
-                    </div>
-                </div>
-
-                <div>
-                    <div class="flex justify-between text-sm">
-                        <span>Transportation</span>
-                        <span>$192 / $400</span>
-                    </div>
-                    <div class="w-full bg-gray-800 h-2 rounded mt-1">
-                        <div class="bg-blue-500 h-2 rounded w-1/2"></div>
-                    </div>
-                </div>
-
-            </div>
-
-        </div>
-
+        <x-dashboard.budget-card 
+            :items="[
+                ['name' => 'Food & Dining', 'spent' => 268, 'total' => 800, 'color' => 'green'],
+                ['name' => 'Transportation', 'spent' => 192, 'total' => 400, 'color' => 'blue'],
+                ['name' => 'Utilities', 'spent' => 205, 'total' => 300, 'color' => 'yellow'],
+                ['name' => 'Entertainment', 'spent' => 136, 'total' => 200, 'color' => 'purple'],
+                ['name' => 'Shopping', 'spent' => 219, 'total' => 500, 'color' => 'pink'],
+                ['name' => 'Healthcare', 'spent' => 53, 'total' => 250, 'color' => 'cyan'],
+            ]"
+        />
     </div>
 
-    <!-- Transactions -->
-    {{-- <div class="mt-6 bg-gray-900 p-6 rounded-xl border border-gray-800"> --}}
-    <div class="mt-6 bg-white dark:bg-gray-900 p-6 rounded-xl border border-gray-200 dark:border-gray-800 p-6 rounded-xl border">
-        <h2 class="mb-4">Recent Transactions</h2>
+    <!-- Transactions Section -->
+<x-dashboard.transactions-card 
+:transactions="[
+    ['title' => 'Lunch delivery', 'category' => 'Food & Dining', 'date' => 'Mar 14', 'amount' => 24.99, 'type' => 'expense'],
+    ['title' => 'Weekly grocery shopping', 'category' => 'Food & Dining', 'date' => 'Mar 13', 'amount' => 156.42, 'type' => 'expense'],
+    ['title' => 'Gas station fill-up', 'category' => 'Transportation', 'date' => 'Mar 13', 'amount' => 52.30, 'type' => 'expense'],
+    ['title' => 'Credit card rewards', 'category' => 'Cashback', 'date' => 'Mar 13', 'amount' => 50.00, 'type' => 'income'],
+    ['title' => 'Electric bill', 'category' => 'Utilities', 'date' => 'Mar 12', 'amount' => 124.89, 'type' => 'expense'],
+    ['title' => 'Netflix subscription', 'category' => 'Entertainment', 'date' => 'Mar 11', 'amount' => 15.99, 'type' => 'expense'],
+    ['title' => 'Etsy sales', 'category' => 'Side Business', 'date' => 'Mar 11', 'amount' => 200.00, 'type' => 'income'],
+    ['title' => 'New running shoes', 'category' => 'Shopping', 'date' => 'Mar 10', 'amount' => 129.00, 'type' => 'expense'],
+]"
 
-        <div class="space-y-4">
+/>
 
-            <div class="flex justify-between items-center">
-                <div>
-                    <p>Lunch delivery</p>
-                    <p class="text-sm text-gray-400">Food & Dining • Mar 14</p>
-                </div>
-                <span class="text-red-500">-$24.99</span>
-            </div>
+</div>
 
-            <div class="flex justify-between items-center">
-                <div>
-                    <p>Credit card rewards</p>
-                    <p class="text-sm text-gray-400">Cashback • Mar 13</p>
-                </div>
-                <span class="text-green-500">+$50.00</span>
-            </div>
+@endsection
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-        </div>
-    </div>
+<script>
+const ctx = document.getElementById('expenseChart');
 
-</x-layouts.app>
+if (ctx) {
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: [
+                'Food & Dining',
+                'Transportation',
+                'Utilities',
+                'Entertainment',
+                'Shopping',
+                'Healthcare'
+            ],
+            datasets: [{
+                data: [268, 192, 205, 136, 219, 53],
+                backgroundColor: [
+                    '#22c55e',
+                    '#3b82f6',
+                    '#f59e0b',
+                    '#8b5cf6',
+                    '#ec4899',
+                    '#06b6d4'
+                ],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            cutout: '70%',
+            plugins: {
+                legend: {
+                    display: false
+                }
+            }
+        }
+    });
+}
+</script>
+@endpush
+

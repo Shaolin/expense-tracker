@@ -1,117 +1,127 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="csrf-token" content="{{ csrf_token() }}">
+@props([
+    'name' => 'Category',
+    'description' => '',
+    'color' => 'green',
+    'expenses' => 0,
+    'amount' => '$0',
+    'percent' => 0,
+    'budget' => '$0'
+])
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+@php
+    $colors = [
+        'green' => 'bg-green-500',
+        'blue' => 'bg-blue-500',
+        'yellow' => 'bg-yellow-500',
+        'purple' => 'bg-purple-500',
+        'pink' => 'bg-pink-500',
+        'cyan' => 'bg-cyan-500',
+        'red' => 'bg-red-500'
+    ];
 
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
-
-        <!-- Scripts -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-    </head>
-    <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100">
-            @include('layouts.navigation')
-
-            <!-- Page Heading -->
-            @if (isset($header))
-                <header class="bg-white shadow">
-                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                        {{ $header }}
-                    </div>
-                </header>
-            @endif
-
-            <!-- Page Content -->
-            <main>
-                {{ $slot }}
-            </main>
-        </div>
-    </body>
-</html>
+    $colorClass = $colors[$color] ?? 'bg-green-500';
+@endphp
 
 
-//dashboard.blade
 
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Dashboard') }}
-        </h2>
-    </x-slot>
+    <!-- Accent -->
+    <div class="flex bg-gray-900 rounded-2xl overflow-hidden border border-gray-800 shadow">
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900">
-                    {{ __("You're logged in!") }}
+        <!-- Colored Left Side -->
+        <div class="w-2 {{ $colorClass }}"></div>
+    
+        <!-- Card Content -->
+        <div class="flex-1 p-5">
+    
+            <!-- Header -->
+            <div class="flex justify-between items-start">
+                <div class="flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full {{ $colorClass }}"></span>
+                    <h2 class="text-white font-semibold">{{ $name }}</h2>
+                </div>
+    
+                <div class="flex gap-2">
+                    <button class="text-gray-400 hover:text-white">✏️</button>
+                    <button class="text-red-500 hover:text-red-600">🗑️</button>
                 </div>
             </div>
+    
+            <!-- Description -->
+            <p class="text-gray-400 text-sm mt-2">
+                {{ $description }}
+            </p>
+    
+            <!-- Stats -->
+            <div class="flex justify-between items-center mt-4 text-sm">
+                <span class="text-gray-400">{{ $expenses }} expenses</span>
+                <span class="text-white font-semibold">{{ $amount }}</span>
+            </div>
+    
+            <!-- Budget -->
+            <div class="mt-3">
+                <div class="flex justify-between text-xs text-gray-400 mb-1">
+                    <span>Budget</span>
+                    <span>{{ $percent }}% of {{ $budget }}</span>
+                </div>
+    
+                <div class="w-full bg-gray-800 rounded-full h-2">
+                    <div class="{{ $colorClass }} h-2 rounded-full" style="width: {{ $percent }}%"></div>
+                </div>
+            </div>
+    
         </div>
     </div>
-</x-app-layout>
-//app.blade.php
-is this one ok, <!DOCTYPE html>
-{{-- <html lang="en" x-data="{ sidebarOpen: true }"> --}}
-    <html lang="en" 
-      x-data="themeStore()" 
-      x-init="init()" 
-      :class="{ 'dark': dark }">
-<head>
-    <meta charset="UTF-8">
-    <title>Expense Tracker</title>
-    @vite('resources/css/app.css')
-    <script defer src="https://unpkg.com/alpinejs"></script>
-</head>
 
-<body class="bg-gray-950 text-gray-200">
+   
 
-<div class="flex h-screen overflow-hidden">
+<!-- dashboard card -->
 
-    <!-- Sidebar -->
-    <x-sidebar />
+@props([
+    'title', 
+    'amount', 
+    'change' => null, 
+    'positive' => true,
+    'color' => 'blue',
+    'icon'
+])
 
-    <!-- Main -->
-    <div class="flex-1 flex flex-col">
+@php
+$colorMap = [
+    'green' => 'bg-green-500',
+    'red' => 'bg-red-500',
+    'blue' => 'bg-blue-500',
+    'purple' => 'bg-purple-500',
+];
+$iconBgMap = [
+    'green' => 'bg-green-100 text-green-600 dark:bg-green-900 dark:text-green-400',
+    'red' => 'bg-red-100 text-red-600 dark:bg-red-900 dark:text-red-400',
+    'blue' => 'bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-400',
+    'purple' => 'bg-purple-100 text-purple-600 dark:bg-purple-900 dark:text-purple-400',
+];
+$accentColor = $colorMap[$color] ?? 'bg-blue-500';
+$iconBgColor = $iconBgMap[$color] ?? 'bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-400';
+@endphp
 
-        <!-- Navbar -->
-        <x-navbar />
+<div class="bg-white dark:bg-gray-900 p-5 rounded-xl border border-gray-200 dark:border-gray-800 flex justify-between items-center shadow-md hover:shadow-lg transition">
 
-        <!-- Page Content -->
-        <main class="p-6 overflow-y-auto">
-            {{ $slot }}
-        </main>
+    <!-- Left accent bar -->
+    <div class="{{ $accentColor }} w-1 h-full rounded-l-xl"></div>
 
+    <!-- Text content -->
+    <div class="flex-1 ml-4">
+        <p class="text-gray-500 dark:text-gray-400 text-sm">{{ $title }}</p>
+        <h2 class="text-2xl font-bold mt-1 text-gray-900 dark:text-white">{{ $amount }}</h2>
+        @if($change)
+            <p class="text-sm mt-1 {{ $positive ? 'text-green-500' : 'text-red-500' }}">
+                {{ $change }}
+            </p>
+        @endif
+    </div>
+
+    <!-- Icon -->
+    <div class="p-3 rounded-lg {{ $iconBgColor }}">
+        <x-icon :name="$icon" />
     </div>
 
 </div>
-<script>
-    function themeStore() {
-        return {
-            dark: true, // default dark
-    
-            init() {
-                const saved = localStorage.getItem('theme')
-    
-                if (saved === 'light') {
-                    this.dark = false
-                } else {
-                    this.dark = true
-                }
-            },
-    
-            toggle() {
-                this.dark = !this.dark
-                localStorage.setItem('theme', this.dark ? 'dark' : 'light')
-            }
-        }
-    }
-    </script>
 
-</body>
-</html>
