@@ -1,4 +1,4 @@
-@props([
+{{-- @props([
     'name' => 'Category',
     'description' => '',
     'color' => 'green',
@@ -6,6 +6,17 @@
     'amount' => '$0',
     'percent' => 0,
     'budget' => '$0'
+]) --}}
+
+@props([
+    'category',
+    'name' => 'Category',
+    'description' => '',
+    'color' => 'green',
+    'expenses' => 0,
+    'amount' => '₦0',
+    'percent' => 0,
+    'budget' => '₦0'
 ])
 
 
@@ -48,8 +59,22 @@ $rgb = $colors[$color]['rgb'] ?? '34,197,94';
                 </div>
     
                 <div class="flex gap-2">
-                    <button class="text-gray-400 hover:text-white">✏️</button>
-                    <button class="text-red-500 hover:text-red-600">🗑️</button>
+                    {{-- <button class="text-gray-400 hover:text-white">✏️</button> --}}
+                    <a href="{{ route('categories.edit', $category) }}">
+                        ✏️
+                    </a>
+                    {{-- <button class="text-red-500 hover:text-red-600">🗑️</button> --}}
+
+                      <!-- Delete -->
+    <form action="{{ route('categories.destroy', $category) }}" method="POST"
+    onsubmit="return confirm('Delete this category?')">
+  @csrf
+  @method('DELETE')
+
+  <button type="submit" class="text-red-400 hover:text-red-600">
+      🗑️
+  </button>
+</form>
                 </div>
             </div>
     

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -34,9 +35,15 @@ Route::get('/income', function () {
     return view('income.index');
 })->name('income.index');
 
-Route::get('/categories', function () {
-    return view('categories.index');
-})->name('categories.index');
+
+
+
+Route::middleware(['auth'])->group(function () {
+    Route::resource('categories', CategoryController::class)
+        ->only(['index', 'create' , 'store', 'edit', 'update', 'destroy']);
+});
+
+
 
 
 Route::get('/budget', function () {
