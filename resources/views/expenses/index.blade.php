@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
+<script src="//unpkg.com/alpinejs" defer></script>
 <div class="p-6 space-y-6">
 
     <!-- Header -->
@@ -14,7 +15,9 @@
             </p>
         </div>
 
-        <x-button.primary>
+    
+
+        <x-button.primary onclick="window.location='{{ route('expenses.create') }}'">
             + Add Expense
         </x-button.primary>
     </div>
@@ -31,15 +34,21 @@
 
         <!-- Filter -->
         <div class="flex gap-3">
-            <select class="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-700 
-               bg-white dark:bg-gray-800 
-               text-gray-700 dark:text-gray-200
-               focus:ring-2 focus:ring-green-500 focus:outline-none">
-                <option>All Categories</option>
-                <option>Food</option>
-                <option>Transport</option>
-                <option>Utilities</option>
-            </select>
+           
+            <select name="category_id" 
+    class="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-700 
+    bg-white dark:bg-gray-800 
+    text-gray-700 dark:text-gray-200
+    focus:ring-2 focus:ring-green-500 focus:outline-none">
+
+    <option value="">All Categories</option>
+
+    @foreach($categories as $category)
+        <option value="{{ $category->id }}">
+            {{ $category->name }}
+        </option>
+    @endforeach
+</select>
 
             <input type="date" class="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-transparent">
         </div>
@@ -57,38 +66,77 @@
         </x-slot>
 
         <x-slot name="body">
-            <!-- Example Row -->
-            <tr class="hover:bg-gray-50 dark:hover:bg-gray-800 transition">
-                <td class="px-6 py-4">Mar 13, 2026</td>
-                <td class="px-6 py-4">
-                    <span class="flex items-center gap-2">
-                        <span class="w-2 h-2 rounded-full bg-green-500"></span>
-                        Food & Dining
-                    </span>
-                </td>
-                <td class="px-6 py-4">Weekly grocery shopping</td>
-                <td class="px-6 py-4 text-right font-medium">$156.42</td>
-                <td class="px-6 py-4 text-right">
-                    <x-dropdown />
-                </td>
-            </tr>
+            @forelse($transactions as $transaction)
+                <tr class="hover:bg-gray-50 dark:hover:bg-gray-800 transition">
+                    
+                    <!-- Date -->
+                    <td class="px-6 py-4">
+                        {{ $transaction->date->format('M d, Y') }}
+                    </td>
         
-            <tr>
-                <td class="px-6 py-4">Mar 12, 2026</td>
-                <td class="px-6 py-4">
-                    <span class="flex items-center gap-2">
-                        <span class="w-2 h-2 rounded-full bg-yellow-500"></span>
-                        Utilities
-                    </span>
-                </td>
-                <td class="px-6 py-4">Electric bill</td>
-                <td class="px-6 py-4 text-right font-medium">$124.89</td>
-                <td class="px-6 py-4 text-right">
-                    <x-dropdown />
-                </td>
-            </tr>
+                    <!-- Category -->
+                    <td class="px-6 py-4">
+                        <span class="flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                            {{ $transaction->category->name }}
+                        </span>
+                    </td>
+        
+                    <!-- Description -->
+                    <td class="px-6 py-4">
+                        {{ $transaction->description ?? '—' }}
+                    </td>
+        
+                    <!-- Amount -->
+                    <td class="px-6 py-4 text-right font-medium">
+                        ₦{{ number_format($transaction->amount, 2) }}
+                    </td>
+        
+                    <td class="px-6 py-4 text-right">
+                        <div x-data="{ open: false }" class="relative inline-block text-left">
+                        
+                            <!-- Dropdown -->
+                            <x-dropdown>
+                                <x-slot name="trigger">
+                                    <button class="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">
+                                        ⋮
+                                    </button>
+                                </x-slot>
+                            
+                                <x-slot name="content">
+                                    <a href="{{ route('expenses.edit', $transaction) }}"
+                                       class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                        Edit
+                                    </a>
+                            
+                                    <form action="{{ route('expenses.destroy', $transaction) }}" method="POST"
+                                    onsubmit="return confirm('Are you sure you want to delete this expense?')">
+                                  @csrf
+                                  @method('DELETE')
+                              
+                                  <button type="submit"
+                                      class="block w-full text-left px-4 py-2 hover:bg-red-100 text-red-600">
+                                      Delete
+                                  </button>
+                              </form>
+                                </x-slot>
+                            </x-dropdown>
+                        </div>
+                    </td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="5" class="text-center py-10 text-gray-500">
+                        No expenses found
+                    </td>
+                </tr>
+            @endforelse
         </x-slot>
     </x-table>
+    {{-- paginations --}}
+    <div>
+        {{ $transactions->links() }}
+    </div>
 
     <!-- Empty State -->
     <div class="hidden text-center py-16 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl">

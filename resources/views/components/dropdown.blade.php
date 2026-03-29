@@ -40,21 +40,47 @@ switch ($width) {
             {{ $content }}
         </div>
     </div>
-</div> --}}
+</div>
 
 
-<div class="relative inline-block text-left">
-    <button class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">
-        ⋯
-    </button>
+ --}}
 
-    <!-- Dropdown (static for now) -->
-    <div class="hidden absolute right-0 mt-2 w-32 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg">
-        <button class="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">
-            Edit
-        </button>
-        <button class="block w-full text-left px-4 py-2 text-red-500 hover:bg-gray-100 dark:hover:bg-gray-700">
-            Delete
-        </button>
+ @props([
+    'align' => 'right',
+    'width' => '48',
+])
+
+@php
+$alignmentClasses = match ($align) {
+    'left' => 'origin-top-left left-0',
+    'right' => 'origin-top-right right-0',
+    default => 'origin-top-right right-0',
+};
+
+$width = match ($width) {
+    '48' => 'w-48',
+    default => 'w-48',
+};
+@endphp
+
+<div class="relative" x-data="{ open: false }">
+
+    <!-- Trigger -->
+    <div @click="open = !open">
+        {{ $trigger }}
     </div>
+
+    <!-- Dropdown -->
+    <div 
+        x-show="open"
+        @click.outside="open = false"
+        x-transition
+        class="absolute z-50 mt-2 {{ $width }} rounded-md shadow-lg {{ $alignmentClasses }}"
+        style="display: none;"
+    >
+        <div class="rounded-md ring-1 ring-black ring-opacity-5 bg-white dark:bg-gray-800">
+            {{ $content }}
+        </div>
+    </div>
+
 </div>

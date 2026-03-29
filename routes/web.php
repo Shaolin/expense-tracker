@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\TransactionController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -25,10 +26,37 @@ Route::get('/dashboard', function () {
 
 
 
-Route::get('/expenses', function () {
-    return view('expenses.index');
-})->name('expenses.index');
+// Route::get('/expenses', function () {
+//     return view('expenses.index');
+// })->name('expenses.index');
 
+// Route::get('/expenses', [TransactionController::class, 'expenses'])->name('expenses.index');
+
+// Route::middleware(['auth'])->group(function () {
+//     Route::resource('expenses', TransactionController::class)
+//         ->only(['index', 'create' , 'store', 'edit', 'update', 'destroy']);
+// });
+
+
+
+// Expenses
+Route::get('/expenses', [TransactionController::class, 'expenses'])->name('expenses.index');
+Route::get('/expenses/create', [TransactionController::class, 'createExpense'])
+    ->name('expenses.create');
+Route::get('/expenses/{transaction}/edit', [TransactionController::class, 'editExpense'])
+    ->name('expenses.edit');
+    Route::delete('/expenses/{transaction}', [TransactionController::class, 'destroyExpense'])
+    ->name('expenses.destroy');
+
+// Income
+Route::get('/income', [TransactionController::class, 'income'])->name('income.index');
+
+// CRUD (still needed)
+Route::get('/transactions/create', [TransactionController::class, 'create'])->name('transactions.create');
+Route::post('/transactions', [TransactionController::class, 'store'])->name('transactions.store');
+Route::get('/transactions/{transaction}/edit', [TransactionController::class, 'edit'])->name('transactions.edit');
+Route::put('/transactions/{transaction}', [TransactionController::class, 'update'])->name('transactions.update');
+Route::delete('/transactions/{transaction}', [TransactionController::class, 'destroy'])->name('transactions.destroy');
 
 
 Route::get('/income', function () {
