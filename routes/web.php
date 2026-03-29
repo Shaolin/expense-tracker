@@ -26,16 +26,6 @@ Route::get('/dashboard', function () {
 
 
 
-// Route::get('/expenses', function () {
-//     return view('expenses.index');
-// })->name('expenses.index');
-
-// Route::get('/expenses', [TransactionController::class, 'expenses'])->name('expenses.index');
-
-// Route::middleware(['auth'])->group(function () {
-//     Route::resource('expenses', TransactionController::class)
-//         ->only(['index', 'create' , 'store', 'edit', 'update', 'destroy']);
-// });
 
 
 
@@ -45,11 +35,21 @@ Route::get('/expenses/create', [TransactionController::class, 'createExpense'])
     ->name('expenses.create');
 Route::get('/expenses/{transaction}/edit', [TransactionController::class, 'editExpense'])
     ->name('expenses.edit');
-    Route::delete('/expenses/{transaction}', [TransactionController::class, 'destroyExpense'])
+Route::delete('/expenses/{transaction}', [TransactionController::class, 'destroyExpense'])
     ->name('expenses.destroy');
 
 // Income
-Route::get('/income', [TransactionController::class, 'income'])->name('income.index');
+// Route::get('/income', [TransactionController::class, 'income'])->name('income.index');
+// Income routes
+Route::prefix('income')->group(function () {
+    Route::get('/', [TransactionController::class, 'indexIncome'])->name('income.index');
+    Route::get('/create', [TransactionController::class, 'createIncome'])->name('income.create');
+    Route::post('/', [TransactionController::class, 'storeIncome'])->name('income.store');
+    Route::get('/{transaction}/edit', [TransactionController::class, 'editIncome'])->name('income.edit');
+    Route::put('/{transaction}', [TransactionController::class, 'updateIncome'])->name('income.update');
+    Route::delete('/{transaction}', [TransactionController::class, 'destroyIncome'])->name('income.destroy');
+});
+
 
 // CRUD (still needed)
 Route::get('/transactions/create', [TransactionController::class, 'create'])->name('transactions.create');
@@ -59,9 +59,7 @@ Route::put('/transactions/{transaction}', [TransactionController::class, 'update
 Route::delete('/transactions/{transaction}', [TransactionController::class, 'destroy'])->name('transactions.destroy');
 
 
-Route::get('/income', function () {
-    return view('income.index');
-})->name('income.index');
+
 
 
 

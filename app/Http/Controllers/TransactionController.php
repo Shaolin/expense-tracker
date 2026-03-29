@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Transaction;
 use App\Models\Category;
+use App\Models\Transaction;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class TransactionController extends Controller
 {
@@ -157,15 +158,91 @@ public function expenses()
     return view('expenses.index', compact('transactions', 'categories'));
 }
 
-public function income()
+private function authorizeIncome(Transaction $transaction)
+{
+    if ($transaction->user_id !== Auth::id() || $transaction->type !== 'income') {
+        abort(403);
+    }
+}
+
+public function indexIncome()
 {
     $transactions = Transaction::with('category')
-        ->forUser(auth()->id())
-        ->type('income')
-        ->latest('date')
-        ->paginate(10);
+        ->where('type', 'income')
+        ->where('user_id', Auth::id())
+        ->latest()
+        ->paginate(10); 
 
-    return view('income.index', compact('transactions'));
+        $totalIncome = Transaction::where('type', 'income')
+        ->where('user_id', Auth::id())
+        ->sum('amount');
+        
+
+    
+    return view('income.index', compact('transactions', 'totalIncome'));
 }
+
+public function createIncome()
+{
+    $categories = Category::where('type', 'income')
+        ->where('user_id', Auth::id()) // optional (if categories are user-specific)
+        ->get();
+
+    return view('income.create', compact('categories'));
+}
+
+public function storeIncome(Request $request)
+{
+    $validated = $request->validate([
+        'amount' => 'required|numeric',
+        'category_id' => 'required|exists:categories,id',
+        'description' => 'nullable|string',
+        'date' => 'required|date',
+    ]);
+
+    $validated['type'] = 'income';
+    $validated['user_id'] = Auth::id(); 
+
+    Transaction::create($validated);
+
+    return redirect()->route('income.index')->with('success', 'Income added successfully.');
+}
+
+public function editIncome(Transaction $transaction)
+{
+    $this->authorizeIncome($transaction); 
+
+    $categories = Category::where('type', 'income')->get();
+
+    return view('income.edit', compact('transaction', 'categories'));
+}
+
+public function updateIncome(Request $request, Transaction $transaction)
+{
+    $this->authorizeIncome($transaction); 
+
+    $validated = $request->validate([
+        'amount' => 'required|numeric',
+        'category_id' => 'required|exists:categories,id',
+        'description' => 'nullable|string',
+        'date' => 'required|date',
+    ]);
+
+    $validated['type'] = 'income';
+
+    $transaction->update($validated);
+
+    return redirect()->route('income.index')->with('success', 'Income updated successfully.');
+}
+
+public function destroyIncome(Transaction $transaction)
+{
+    $this->authorizeIncome($transaction); 
+
+    $transaction->delete();
+
+    return redirect()->route('income.index')->with('success', 'Income deleted successfully.');
+}
+
 
 }

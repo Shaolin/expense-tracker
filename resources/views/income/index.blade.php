@@ -1,3 +1,5 @@
+
+
 @extends('layouts.app')
 
 @section('content')
@@ -14,9 +16,32 @@
             </p>
         </div>
 
-        <x-button.primary class="bg-green-600 hover:bg-green-700">
-            + Add Income
-        </x-button.primary>
+        <div class="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-800">
+    
+            <div class="flex items-center justify-between">
+                
+                <div>
+                    <p class="text-sm text-gray-500">Total Income</p>
+                    <h2 class="text-3xl font-bold text-green-500 mt-1">
+                        ₦{{ number_format($totalIncome, 2) }}
+                    </h2>
+                </div>
+        
+                <!-- Icon (optional) -->
+                <div class="w-12 h-12 flex items-center justify-center rounded-full bg-green-100 dark:bg-green-900">
+                    💰
+                </div>
+        
+            </div>
+        
+        </div>
+
+        
+        <x-button.primary 
+    onclick="window.location='{{ route('income.create') }}'"
+    class="bg-green-600 hover:bg-green-700">
+    + Add Income
+</x-button.primary>
     </div>
 
     <!-- Filters -->
@@ -58,47 +83,81 @@
         </x-slot>
 
         <x-slot name="body">
-            <!-- Example Row -->
-            <tr class="hover:bg-gray-50 dark:hover:bg-gray-800 transition">
-                <td class="px-6 py-4">Mar 13, 2026</td>
-                <td class="px-6 py-4">
-                    <span class="flex items-center gap-2">
-                        <span class="w-2 h-2 rounded-full bg-green-500"></span>
-                        Salary
-                    </span>
-                </td>
-                <td class="px-6 py-4">Monthly salary payment</td>
-                <td class="px-6 py-4 text-right font-medium text-green-500">+$4,500.00</td>
-                <td class="px-6 py-4 text-right">
-                    <x-dropdown />
-                </td>
-            </tr>
-
-            <tr class="hover:bg-gray-50 dark:hover:bg-gray-800 transition">
-                <td class="px-6 py-4">Mar 11, 2026</td>
-                <td class="px-6 py-4">
-                    <span class="flex items-center gap-2">
-                        <span class="w-2 h-2 rounded-full bg-green-500"></span>
-                        Side Business
-                    </span>
-                </td>
-                <td class="px-6 py-4">Etsy sales</td>
-                <td class="px-6 py-4 text-right font-medium text-green-500">+$200.00</td>
-                <td class="px-6 py-4 text-right">
-                    <x-dropdown />
-                </td>
-            </tr>
-
+            @forelse($transactions as $transaction)
+                <tr class="hover:bg-gray-50 dark:hover:bg-gray-800 transition">
+        
+                    <!-- Date -->
+                    <td class="px-6 py-4">
+                        {{ \Carbon\Carbon::parse($transaction->date)->format('M d, Y') }}
+                    </td>
+        
+                    <!-- Source (Category) -->
+                    <td class="px-6 py-4">
+                        <span class="flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                            {{ $transaction->category->name ?? 'N/A' }}
+                        </span>
+                    </td>
+        
+                    <!-- Description -->
+                    <td class="px-6 py-4">
+                        {{ $transaction->description ?? '-' }}
+                    </td>
+        
+                    <!-- Amount -->
+                    <td class="px-6 py-4 text-right font-medium text-green-500">
+                        +₦{{ number_format($transaction->amount, 2) }}
+                    </td>
+        
+                    <!-- Actions -->
+                    <td class="px-6 py-4 text-right">
+                        <div class="flex justify-end gap-3">
+        
+                            <a href="{{ route('income.edit', $transaction) }}"
+                               class="text-blue-500 hover:underline">
+                                Edit
+                            </a>
+        
+                            <form action="{{ route('income.destroy', $transaction) }}"
+                                  method="POST"
+                                  onsubmit="return confirm('Delete this income?')">
+                                @csrf
+                                @method('DELETE')
+        
+                                <button class="text-red-500 hover:underline">
+                                    Delete
+                                </button>
+                            </form>
+        
+                        </div>
+                    </td>
+        
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="5" class="px-6 py-6 text-center text-gray-500">
+                        No income records found.
+                    </td>
+                </tr>
+            @endforelse
         </x-slot>
     </x-table>
 
-    <!-- Empty State -->
-    <div class="hidden text-center py-16 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl">
-        <p class="text-gray-500 mb-4">No income records found</p>
-        <x-button.primary class="bg-green-600 hover:bg-green-700">
-            Add your first income
-        </x-button.primary>
+    <div class="mt-4">
+        {{ $transactions->links() }}
     </div>
+
+    <!-- Empty State -->
+    @if($transactions->isEmpty())
+    <div class="text-center py-16 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl">
+        <p class="text-gray-500 mb-4">No income records found</p>
+        <a href="{{ route('income.create') }}">
+            <x-button.primary class="bg-green-600 hover:bg-green-700">
+                Add your first income
+            </x-button.primary>
+        </a>
+    </div>
+@endif
 
 </div>
 @endsection
