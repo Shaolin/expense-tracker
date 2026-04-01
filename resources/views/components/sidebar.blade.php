@@ -43,7 +43,7 @@
             <span x-show="sidebarOpen" x-transition>Categories</span>
         </a>
 
-        <a href="{{ route('budget.index') }}"  class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800">
+        <a href="{{ route('budgets.index') }}"  class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800">
             {{-- <span>📊</span> --}}
             <x-icon name="categories" />
             <span x-show="sidebarOpen" x-transition>Budgets</span>

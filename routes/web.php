@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BudgetController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TransactionController;
@@ -72,10 +73,8 @@ Route::middleware(['auth'])->group(function () {
 
 
 
-Route::get('/budget', function () {
-    return view('budget.index');
-})->name('budget.index');
 
+Route::resource('budgets', BudgetController::class);
 
 
 

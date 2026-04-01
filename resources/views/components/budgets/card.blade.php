@@ -1,3 +1,7 @@
+@props(['totalBudget', 'totalSpent', 'remaining', 'budgets'])
+
+
+
 @extends('layouts.app')
 
 @section('content')
@@ -11,21 +15,29 @@
         <!-- Total Budget -->
         <div class="bg-gray-900 text-white rounded-2xl p-6 shadow flex flex-col justify-between">
             <p class="text-sm text-gray-400">Total Budget</p>
-            <h2 class="text-3xl font-bold mt-2">$2,450</h2>
+            {{-- <h2 class="text-3xl font-bold mt-2">$2,450</h2> --}}
+            <h2 class="text-3xl font-bold mt-2">₦{{ number_format($totalBudget) }}</h2>
             <p class="text-xs text-gray-500">Monthly allocation</p>
         </div>
 
         <!-- Total Spent -->
         <div class="bg-gray-900 text-white rounded-2xl p-6 shadow flex flex-col justify-between">
             <p class="text-sm text-gray-400">Total Spent</p>
-            <h2 class="text-3xl font-bold mt-2">$1,073</h2>
-            <p class="text-xs text-gray-500">44% of budget used</p>
+            {{-- <h2 class="text-3xl font-bold mt-2">$1,073</h2> --}}
+            <h2 class="text-3xl font-bold mt-2">₦{{ number_format($totalSpent) }}</h2>
+            {{-- <p class="text-xs text-gray-500">44% of budget used</p> --}}
+            <p class="text-xs text-gray-500">
+                {{ $totalBudget > 0 ? round(($totalSpent / $totalBudget) * 100) : 0 }}% of budget used
+            </p>
         </div>
 
         <!-- Remaining -->
         <div class="bg-gray-900 text-white rounded-2xl p-6 shadow flex flex-col justify-between">
             <p class="text-sm text-gray-400">Remaining</p>
-            <h2 class="text-3xl font-bold mt-2 text-green-500">$1,377</h2>
+            {{-- <h2 class="text-3xl font-bold mt-2 text-green-500">$1,377</h2> --}}
+            <h2 class="text-3xl font-bold mt-2 text-green-500">
+                ₦{{ number_format($remaining) }}
+            </h2>
             <p class="text-xs text-gray-500">Left to spend</p>
         </div>
 
@@ -43,90 +55,106 @@
                 <p class="text-sm text-gray-400">Click on a budget amount to edit it</p>
             </div>
 
-            <button 
-                @click="openModal = true"
-                class="bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-xl text-sm">
-                Set Budget
-            </button>
+            <a href="{{ route('budgets.create') }}"
+            class="bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-xl text-sm inline-block">
+             Set Budget
+         </a>
         </div>
 
-        @php
-            $budgets = [
-                ['name' => 'Food & Dining', 'spent' => 268, 'budget' => 800, 'color' => 'green'],
-                ['name' => 'Transportation', 'spent' => 192, 'budget' => 400, 'color' => 'blue'],
-                ['name' => 'Utilities', 'spent' => 205, 'budget' => 300, 'color' => 'yellow'],
-                ['name' => 'Entertainment', 'spent' => 136, 'budget' => 200, 'color' => 'purple'],
-            ];
-        @endphp
+        
 
         <div class="space-y-4">
 
-            @foreach($budgets as $item)
+            @foreach($budgets as $budget)
                 @php
-                    $percentage = min(100, ($item['spent'] / $item['budget']) * 100);
-
-                    $barColor = match($item['color']) {
-                        'green' => 'bg-green-500',
-                        'blue' => 'bg-blue-500',
-                        'yellow' => 'bg-yellow-500',
-                        'purple' => 'bg-purple-500',
-                        default => 'bg-gray-500'
-                    };
-
+                    $barColor = 'bg-green-500';
+        
+                    if ($budget->percentage >= 80 && $budget->percentage < 100) {
+                        $barColor = 'bg-yellow-500';
+                    }
+        
+                    if ($budget->percentage >= 100) {
+                        $barColor = 'bg-red-500';
+                    }
+        
                     $dotColor = str_replace('bg', 'bg-opacity-20 bg', $barColor);
                 @endphp
-
+        
                 <div class="bg-gray-800 rounded-2xl p-5 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-
+        
                     <!-- Left -->
                     <div class="flex items-center gap-4 w-full md:w-1/2">
-
-                        <!-- Icon Circle -->
+        
+                        <!-- Icon -->
                         <div class="w-10 h-10 rounded-full {{ $dotColor }} flex items-center justify-center">
                             <div class="w-3 h-3 rounded-full {{ $barColor }}"></div>
                         </div>
-
+        
                         <!-- Category + Progress -->
                         <div class="flex-1">
-                            <h3 class="font-medium">{{ $item['name'] }}</h3>
-
+                            <h3 class="font-medium">{{ $budget->category->name }}</h3>
+        
                             <div class="flex items-center gap-3 mt-2">
                                 <div class="w-full bg-gray-700 h-2 rounded-full overflow-hidden">
                                     <div 
                                         class="{{ $barColor }} h-2 rounded-full"
-                                        style="width: {{ $percentage }}%">
+                                        style="width: {{ $budget->percentage }}%">
                                     </div>
                                 </div>
-
+        
                                 <span class="text-sm text-gray-400">
-                                    {{ round($percentage) }}%
+                                    {{ round($budget->percentage) }}%
                                 </span>
                             </div>
                         </div>
-
+        
                     </div>
-
+        
                     <!-- Right -->
-                    <div class="flex items-center justify-between md:justify-end gap-10 w-full md:w-auto text-sm">
+                    
+                    <div class="flex items-center justify-between md:justify-end gap-4 w-full md:w-auto text-sm">
 
+                        <!-- Spent -->
                         <div class="text-right">
                             <p class="text-gray-400">Spent</p>
-                            <p class="font-semibold">${{ number_format($item['spent']) }}</p>
+                            <p class="font-semibold">₦{{ number_format($budget->spent) }}</p>
                         </div>
-
+                    
+                        <!-- Budget -->
                         <div class="text-right">
                             <p class="text-gray-400">Budget</p>
-                            <p class="font-semibold cursor-pointer hover:underline">
-                                ${{ number_format($item['budget']) }}
-                            </p>
-                        </div>
-
+                            {{-- <p class="font-semibold">
+                                ₦{{ number_format($budget->amount) }}
+                            </p> --}}
+                        
+                        <a href="{{ route('budgets.edit', $budget->id) }}" class="font-semibold hover:underline">
+                            ₦{{ number_format($budget->amount) }}
+                        </a>
                     </div>
-
+                    
+                      
+                    
+                        <!-- Delete Button -->
+                        <div>
+                            <form action="{{ route('budgets.destroy', $budget->id) }}" method="POST" 
+                                  onsubmit="return confirm('Are you sure you want to delete this budget?');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" 
+                                        class="text-red-400 hover:text-red-300 text-sm font-medium">
+                                    🗑️ Delete
+                                </button>
+                            </form>
+                        </div>
+                    
+                    </div>
+        
                 </div>
             @endforeach
-
+        
         </div>
+
+       
 
     </div>
 
