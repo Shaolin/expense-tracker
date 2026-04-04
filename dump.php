@@ -1,126 +1,315 @@
-@props([
-    'category',
-    'type' => 'expense',
-    'numTransactions' => 0,
-    'totalAmount' => 0,
-    'percent' => 0,
-    'budget' => 0,
-])
+<?php
 
-@php
-$colors = [
-    'green' => ['border' => 'border-green-500', 'rgb' => '34,197,94'],
-    'blue' => ['border' => 'border-blue-500', 'rgb' => '59,130,246'],
-    'yellow' => ['border' => 'border-yellow-500', 'rgb' => '234,179,8'],
-    'purple' => ['border' => 'border-purple-500', 'rgb' => '168,85,247'],
-    'pink' => ['border' => 'border-pink-500', 'rgb' => '236,72,153'],
-    'cyan' => ['border' => 'border-cyan-500', 'rgb' => '6,182,212'],
-    'red' => ['border' => 'border-red-500', 'rgb' => '239,68,68'],
-];
+namespace App\Http\Controllers;
 
-$borderColor = $colors[$category->color]['border'] ?? 'border-green-500';
-$rgb = $colors[$category->color]['rgb'] ?? '34,197,94';
-@endphp
+use App\Models\Category;
+use App\Models\Transaction;
+use Illuminate\Http\Request;
+// use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
-<div class="bg-gray-900 rounded-2xl shadow p-4 flex flex-col justify-between hover:scale-[1.02] transition-all duration-300 relative"
-     style="border-left-width: 4px; border-left-color: {{ $rgb }}; aspect-[4/3]">
+class TransactionController extends Controller
+{
+    /**
+     * Display a listing of transactions (Dashboard-ready)
+     */
+    public function index(Request $request)
+    {
+        $userId = auth()->id();
 
-    <!-- Type Label -->
-    <span class="absolute top-2 left-2 text-xs font-semibold px-2 py-1 rounded-full
-        {{ $type === 'expense' ? 'bg-red-500 text-white' : 'bg-green-500 text-white' }}">
-        {{ ucfirst($type) }}
-    </span>
+        // Optional filters
+        $type = $request->type; // income | expense
+        $start = $request->start_date;
+        $end = $request->end_date;
 
-    <!-- Header -->
-    <div class="flex justify-between items-start mt-5">
-        <div>
-            <h3 class="text-white font-semibold text-sm">{{ $category->name }}</h3>
-            <p class="text-gray-400 text-xs mt-1">{{ $category->description }}</p>
-        </div>
-        <div class="flex gap-2">
-            <a href="{{ route('categories.edit', $category) }}" class="text-gray-400 hover:text-white text-sm">✏️</a>
-            <form action="{{ route('categories.destroy', $category) }}" method="POST" onsubmit="return confirm('Delete this category?')">
-                @csrf
-                @method('DELETE')
-                <button type="submit" class="text-red-400 hover:text-red-600 text-sm">🗑️</button>
-            </form>
-        </div>
-    </div>
+        $transactions = Transaction::with('category')
+            ->forUser($userId)
+            ->when($type, fn ($q) => $q->type($type))
+            ->when($start && $end, fn ($q) => $q->betweenDates($start, $end))
+            ->latest('date')
+             ->paginate(10);
 
-    <!-- Stats -->
-    <div class="mt-4 text-sm">
-        <div class="flex justify-between items-center">
-            <span class="text-gray-400">{{ $numTransactions }} {{ Str::plural($type, $numTransactions) }}</span>
-            <span class="text-white font-semibold">₦{{ number_format($totalAmount, 2) }}</span>
-        </div>
+        return view('transactions.index', compact('transactions'));
+    }
 
-        <!-- Budget Bar for Expenses -->
-        @if($type === 'expense')
-            <div class="mt-2">
-                <div class="w-full bg-gray-800 h-2 rounded-full">
-                    <div class="{{ $borderColor }} h-2 rounded-full" style="width: {{ $percent }}%"></div>
-                </div>
-            </div>
-        @endif
-    </div>
+    /**
+     * Show form to create a transaction
+     */
+    public function createExpense()
+    {
+        $categories = Category::all();
 
-</div>
+        return view('expenses.create', compact('categories'));
+    }
 
-@extends('layouts.app')
+    /**
+     * Store a new transaction
+     */
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'category_id' => 'required|exists:categories,id',
+            'amount' => 'required|numeric|min:0',
+            'type' => 'required|in:income,expense',
+            'description' => 'nullable|string',
+            'date' => 'required|date',
+        ]);
 
-@section('content')
-<div class="p-6 space-y-6">
+        $validated['user_id'] = auth()->id();
 
-    <!-- Header -->
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div>
-            <h1 class="text-2xl font-bold text-white">Categories</h1>
-            <p class="text-gray-400">Manage your expense and income categories</p>
-        </div>
+        Transaction::create($validated);
 
-        <a href="{{ route('categories.create') }}"
-           class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition inline-block">
-            + Add Category
-        </a>
-    </div>
+        if ($validated['type'] === 'expense') {
+            return redirect()
+                ->route('expenses.index')
+                ->with('success', 'Expense added successfully.');
+        }
+        return redirect()
+        ->route('income.index')
+        ->with('success', 'Income added successfully.');
+    }
 
-    <!-- Expenses Section -->
-    <h2 class="text-xl font-semibold text-white mt-6">Expenses</h2>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        @forelse($expenseCategories as $category)
-            <x-category.card 
-                :category="$category"
-                type="expense"
-                :num-transactions="$category->num_expenses ?? 0"
-                :total-amount="$category->spent ?? 0"
-                :percent="$category->percentage ?? 0"
-                :budget="$category->budget_amount ?? 0"
-            />
-        @empty
-            <div class="col-span-full text-center py-10 text-gray-500">
-                No expense categories yet.
-            </div>
-        @endforelse
-    </div>
+    /**
+     * Show a single transaction (optional)
+     */
+    public function show(Transaction $transaction)
+    {
+        $this->authorizeTransaction($transaction);
 
-    <!-- Income Section -->
-    <h2 class="text-xl font-semibold text-white mt-10">Income</h2>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        @forelse($incomeCategories as $category)
-            <x-category.card 
-                :category="$category"
-                type="income"
-                :num-transactions="$category->numTransactions ?? 0"
-                :total-amount="$category->totalIncome ?? 0"
-                :percent="0"
-                :budget="0"
-            />
-        @empty
-            <div class="col-span-full text-center py-10 text-gray-500">
-                No income categories yet.
-            </div>
-        @endforelse
-    </div>
+        return view('transactions.show', compact('transaction'));
+    }
 
-</div>
-@endsection
+    /**
+     * Show form to edit transaction
+     */
+    public function editExpense(Transaction $transaction)
+    {
+       
+        if ($transaction->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        $categories = Category::all();
+
+        return view('expenses.edit', compact('transaction', 'categories'));
+    }
+
+    /**
+     * Update transaction
+     */
+    public function update(Request $request, Transaction $transaction)
+    {
+        $this->authorizeTransaction($transaction);
+
+        $validated = $request->validate([
+            'category_id' => 'required|exists:categories,id',
+            'amount' => 'required|numeric|min:0',
+            'type' => 'required|in:income,expense',
+            'description' => 'nullable|string',
+            'date' => 'required|date',
+        ]);
+
+        $transaction->update($validated);
+
+        return redirect()
+        ->route('expenses.index')
+        ->with('success', 'Expense updated successfully.');
+    }
+
+    /**
+     * Delete transaction
+     */
+    public function destroyExpense(Transaction $transaction)
+{
+    //  Ensure user owns it
+    if ($transaction->user_id !== auth()->id()) {
+        abort(403);
+    }
+
+    $transaction->delete();
+
+    return redirect()
+        ->route('expenses.index')
+        ->with('success', 'Expense deleted successfully.');
+}
+
+    /**
+     *  Ensure user owns the transaction
+     */
+    private function authorizeTransaction(Transaction $transaction)
+    {
+        if ($transaction->user_id !== auth()->id()) {
+            abort(403);
+        }
+    }
+
+
+
+
+    public function expenses(Request $request)
+    {
+        $query = Transaction::with('category')
+            ->forUser(auth()->id())
+            ->type('expense');
+    
+        // 🔍 Search (description + category)
+        if ($request->search) {
+            $query->where(function ($q) use ($request) {
+                $q->where('description', 'like', '%' . $request->search . '%')
+                  ->orWhereHas('category', function ($q2) use ($request) {
+                      $q2->where('name', 'like', '%' . $request->search . '%');
+                  });
+            });
+        }
+    
+        // 📂 Filter by category
+        if ($request->category_id) {
+            $query->where('category_id', $request->category_id);
+        }
+    
+        // 📅 Filter by date
+        if ($request->date) {
+            $query->whereDate('date', $request->date);
+        }
+    
+        $transactions = $query->latest('date')->paginate(10)->withQueryString();
+    
+        // $categories = Category::all();
+        $categories = Category::where('type', 'expense')
+    ->where('user_id', auth()->id()) // optional if categories are user-specific
+    ->get();
+    
+        return view('expenses.index', compact('transactions', 'categories'));
+    }
+
+private function authorizeIncome(Transaction $transaction)
+{
+    if ($transaction->user_id !== Auth::id() || $transaction->type !== 'income') {
+        abort(403);
+    }
+}
+
+
+
+public function indexIncome(Request $request)
+{
+    $query = Transaction::with('category')
+        ->where('type', 'income')
+        ->where('user_id', Auth::id());
+
+    // 🔍 Search (description + category/source)
+    if ($request->search) {
+        $query->where(function ($q) use ($request) {
+            $q->where('description', 'like', '%' . $request->search . '%')
+              ->orWhereHas('category', function ($q2) use ($request) {
+                  $q2->where('name', 'like', '%' . $request->search . '%');
+              });
+        });
+    }
+
+    // 📂 Filter by category (source)
+    if ($request->category_id) {
+        $query->where('category_id', $request->category_id);
+    }
+
+    // 📅 Filter by date
+    if ($request->date) {
+        $query->whereDate('date', $request->date);
+    }
+
+    $transactions = $query->latest('date')
+        ->paginate(10)
+        ->withQueryString();
+
+    // ✅ ONLY income categories
+    $categories = Category::where('type', 'income')
+        ->where('user_id', Auth::id())
+        ->get();
+
+    // 💰 TOTAL INCOME (ALL TIME)
+    $totalIncome = Transaction::where('type', 'income')
+        ->where('user_id', Auth::id())
+        ->sum('amount');
+
+    // 📊 TOTAL INCOME THIS MONTH
+    $now = Carbon::now();
+
+    $totalIncomeThisMonth = Transaction::where('type', 'income')
+        ->where('user_id', Auth::id())
+        ->whereMonth('date', $now->month)
+        ->whereYear('date', $now->year)
+        ->sum('amount');
+
+    return view('income.index', compact(
+        'transactions',
+        'totalIncome',
+        'categories',
+        'totalIncomeThisMonth'
+    ));
+}
+
+public function createIncome()
+{
+    $categories = Category::where('type', 'income')
+        ->where('user_id', Auth::id()) // optional (if categories are user-specific)
+        ->get();
+
+    return view('income.create', compact('categories'));
+}
+
+public function storeIncome(Request $request)
+{
+    $validated = $request->validate([
+        'amount' => 'required|numeric',
+        'category_id' => 'required|exists:categories,id',
+        'description' => 'nullable|string',
+        'date' => 'required|date',
+    ]);
+
+    $validated['type'] = 'income';
+    $validated['user_id'] = Auth::id(); 
+
+    Transaction::create($validated);
+
+    return redirect()->route('income.index')->with('success', 'Income added successfully.');
+}
+
+public function editIncome(Transaction $transaction)
+{
+    $this->authorizeIncome($transaction); 
+
+    $categories = Category::where('type', 'income')->get();
+
+    return view('income.edit', compact('transaction', 'categories'));
+}
+
+public function updateIncome(Request $request, Transaction $transaction)
+{
+    $this->authorizeIncome($transaction); 
+
+    $validated = $request->validate([
+        'amount' => 'required|numeric',
+        'category_id' => 'required|exists:categories,id',
+        'description' => 'nullable|string',
+        'date' => 'required|date',
+    ]);
+
+    $validated['type'] = 'income';
+
+    $transaction->update($validated);
+
+    return redirect()->route('income.index')->with('success', 'Income updated successfully.');
+}
+
+public function destroyIncome(Transaction $transaction)
+{
+    $this->authorizeIncome($transaction); 
+
+    $transaction->delete();
+
+    return redirect()->route('income.index')->with('success', 'Income deleted successfully.');
+}
+
+
+}

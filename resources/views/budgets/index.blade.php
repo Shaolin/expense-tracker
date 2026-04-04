@@ -22,6 +22,19 @@
         </a>
     </div>
 
+    <!-- Month Selector -->
+<form method="GET" action="{{ route('budgets.index') }}" class="mb-6 flex items-center gap-4">
+    <label for="month" class="text-gray-400">Select Month:</label>
+    <input 
+        type="month" 
+        id="month" 
+        name="month" 
+        value="{{ $selectedMonth ?? now()->format('Y-m') }}"
+        class="px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-700"
+        onchange="this.form.submit()"
+    >
+</form>
+
     <!-- ===================== -->
     <!-- Top Summary Cards -->
     <!-- ===================== -->

@@ -32,7 +32,17 @@ $rgb = $colors[$category->color]['rgb'] ?? '34,197,94';
 
     <!-- Category Header -->
     <div class="mt-6 flex justify-between items-start">
-        <h2 class="text-white font-semibold text-lg">{{ $category->name }}</h2>
+        {{-- <h2 class="text-white font-semibold text-lg">{{ $category->name }}</h2> --}}
+        <div class="flex items-center gap-2">
+            <span 
+                class="w-2.5 h-2.5 rounded-full"
+                style="background-color: rgba({{ $rgb }}, 1);">
+            </span>
+        
+            <h2 class="text-white font-semibold text-lg">
+                {{ $category->name }}
+            </h2>
+        </div>
         <div class="flex gap-2">
             <a href="{{ route('categories.edit', $category) }}">✏️</a>
             <form action="{{ route('categories.destroy', $category) }}" method="POST" onsubmit="return confirm('Delete this category?')">

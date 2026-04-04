@@ -23,35 +23,65 @@
     </div>
 
     <!-- Filters -->
-    <div class="bg-white dark:bg-gray-900 p-4 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 flex flex-col md:flex-row gap-4 md:items-center md:justify-between">
-
-        <!-- Search -->
-        <input 
-            type="text" 
-            placeholder="Search by description or category..."
-            class="w-full md:w-1/3 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-transparent focus:ring-2 focus:ring-green-500 outline-none"
-        >
-
-        <!-- Filter -->
-        <div class="flex gap-3">
-           
-            <select name="category_id" 
-    class="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-700 
-    bg-white dark:bg-gray-800 
-    text-gray-700 dark:text-gray-200
-    focus:ring-2 focus:ring-green-500 focus:outline-none">
-
-    <option value="">All Categories</option>
-
-    @foreach($categories as $category)
-        <option value="{{ $category->id }}">
-            {{ $category->name }}
-        </option>
-    @endforeach
-</select>
-
-            <input type="date" class="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-transparent">
+    <form method="GET" action="{{ route('expenses.index') }}">
+        <div class="bg-white dark:bg-gray-900 p-4 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 flex flex-col md:flex-row gap-4 md:items-center md:justify-between">
+    
+            <!-- Search -->
+            <input 
+                type="text" 
+                name="search"
+                value="{{ request('search') }}"
+                placeholder="Search by description or category..."
+                class="w-full md:w-1/3 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-transparent focus:ring-2 focus:ring-green-500 outline-none"
+            >
+    
+            <!-- Filters -->
+            <div class="flex gap-3">
+    
+                <!-- Category -->
+                <select name="category_id" 
+                    class="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-700 
+                    bg-white dark:bg-gray-800 
+                    text-gray-700 dark:text-gray-200
+                    focus:ring-2 focus:ring-green-500 focus:outline-none">
+    
+                    <option value="">All Categories</option>
+    
+                    @foreach($categories as $category)
+                        <option value="{{ $category->id }}"
+                            {{ request('category_id') == $category->id ? 'selected' : '' }}>
+                            {{ $category->name }}
+                        </option>
+                    @endforeach
+                </select>
+    
+                <!-- Date -->
+                <input 
+                    type="date" 
+                    name="date"
+                    value="{{ request('date') }}"
+                    class="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-transparent"
+                >
+    
+                <!-- Submit -->
+                <button class="px-4 py-2 bg-green-600 text-white rounded-lg">
+                    Filter
+                </button>
+                <a href="{{ route('expenses.index') }}" 
+   class="px-4 py-2 bg-gray-500 text-white rounded-lg">
+    Reset
+</a>
+               <!-- Month Picker -->
+               <input 
+               type="month" 
+               name="month"
+               value="{{ request('month', now()->format('Y-m')) }}"
+               class="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-transparent"
+               >
+    
+            </div>
         </div>
+    </form>
     </div>
 
     <!-- Table -->

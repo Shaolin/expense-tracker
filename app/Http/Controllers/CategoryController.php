@@ -10,84 +10,89 @@ class CategoryController extends Controller
     /**
      * Display a listing of categories
      */
-    public function index()
-    {
-        $userId = auth()->id();
-        $currentMonth = now()->format('Y-m');
-    
-        // -------------------------
-        // 1. Fetch Expense Categories
-        // -------------------------
-        $expenseCategories = Category::forUser($userId)
+
+     public function index(Request $request)
+{
+    $userId = auth()->id();
+
+    // Get selected month from query or default to current month
+    $selectedMonth = $request->query('month', now()->format('Y-m'));
+    $parsedMonth = \Carbon\Carbon::parse($selectedMonth);
+
+    // -------------------------
+    // 1. Expense Categories
+    // -------------------------
+    $expenseCategories = Category::forUser($userId)
+        ->where('type', 'expense')
+        ->orderBy('name')
+        ->get();
+
+    foreach ($expenseCategories as $category) {
+        $budget = \App\Models\Budget::where('user_id', $userId)
+            ->where('category_id', $category->id)
+            ->where('month', $selectedMonth)
+            ->first();
+
+        $budgetAmount = $budget ? $budget->amount : 0;
+
+        $spent = \App\Models\Transaction::where('user_id', $userId)
+            ->where('category_id', $category->id)
             ->where('type', 'expense')
-            ->orderBy('name')
-            ->get();
-    
-        foreach ($expenseCategories as $category) {
-            // Fetch budget for this category (current month)
-            $budget = \App\Models\Budget::where('user_id', $userId)
-                ->where('category_id', $category->id)
-                ->where('month', $currentMonth)
-                ->first();
-    
-            $budgetAmount = $budget ? $budget->amount : 0;
-    
-            // Calculate spent for this category
-            $spent = \App\Models\Transaction::where('user_id', $userId)
-                ->where('category_id', $category->id)
-                ->where('type', 'expense')
-                ->whereMonth('date', \Carbon\Carbon::parse($currentMonth)->month)
-                ->whereYear('date', \Carbon\Carbon::parse($currentMonth)->year)
-                ->sum('amount');
-    
-            $remaining = $budgetAmount - $spent;
-            $percentage = $budgetAmount > 0 ? min(100, ($spent / $budgetAmount) * 100) : 0;
-    
-            // Count number of expense transactions
-            $numExpenses = \App\Models\Transaction::where('user_id', $userId)
-                ->where('category_id', $category->id)
-                ->where('type', 'expense')
-                ->whereMonth('date', \Carbon\Carbon::parse($currentMonth)->month)
-                ->whereYear('date', \Carbon\Carbon::parse($currentMonth)->year)
-                ->count();
-    
-            // Attach computed values
-            $category->budget_amount = $budgetAmount;
-            $category->spent = $spent;
-            $category->remaining = $remaining;
-            $category->percentage = $percentage;
-            $category->num_expenses = $numExpenses;
-        }
-    
-        // -------------------------
-        // 2. Fetch Income Categories
-        // -------------------------
-        $incomeCategories = Category::forUser($userId)
+            ->whereMonth('date', $parsedMonth->month)
+            ->whereYear('date', $parsedMonth->year)
+            ->sum('amount');
+
+        $remaining = $budgetAmount - $spent;
+        $percentage = $budgetAmount > 0 ? min(100, ($spent / $budgetAmount) * 100) : 0;
+
+        $numExpenses = \App\Models\Transaction::where('user_id', $userId)
+            ->where('category_id', $category->id)
+            ->where('type', 'expense')
+            ->whereMonth('date', $parsedMonth->month)
+            ->whereYear('date', $parsedMonth->year)
+            ->count();
+
+        $category->budget_amount = $budgetAmount;
+        $category->spent = $spent;
+        $category->remaining = $remaining;
+        $category->percentage = $percentage;
+        $category->num_expenses = $numExpenses;
+    }
+
+    // -------------------------
+    // 2. Income Categories
+    // -------------------------
+    $incomeCategories = Category::forUser($userId)
+        ->where('type', 'income')
+        ->orderBy('name')
+        ->get();
+
+    foreach ($incomeCategories as $category) {
+        $totalIncome = \App\Models\Transaction::where('user_id', $userId)
+            ->where('category_id', $category->id)
             ->where('type', 'income')
-            ->orderBy('name')
-            ->get();
-    
-        foreach ($incomeCategories as $category) {
-            $totalIncome = \App\Models\Transaction::where('user_id', $userId)
-                ->where('category_id', $category->id)
-                ->where('type', 'income')
-                ->sum('amount');
-    
-            $numTransactions = \App\Models\Transaction::where('user_id', $userId)
-                ->where('category_id', $category->id)
-                ->where('type', 'income')
-                ->count();
-    
-            // Attach computed values
-            $category->totalIncome = $totalIncome;
-            $category->numTransactions = $numTransactions;
-        }
-    
-        // -------------------------
-        // 3. Return view with separate collections
-        // -------------------------
-        return view('categories.index', compact('expenseCategories', 'incomeCategories'));
-    }     /**
+            ->whereMonth('date', $parsedMonth->month)
+            ->whereYear('date', $parsedMonth->year)
+            ->sum('amount');
+
+        $numTransactions = \App\Models\Transaction::where('user_id', $userId)
+            ->where('category_id', $category->id)
+            ->where('type', 'income')
+            ->whereMonth('date', $parsedMonth->month)
+            ->whereYear('date', $parsedMonth->year)
+            ->count();
+
+        $category->totalIncome = $totalIncome;
+        $category->numTransactions = $numTransactions;
+    }
+
+    return view('categories.index', compact(
+        'expenseCategories',
+        'incomeCategories',
+        'selectedMonth' // pass selected month to blade
+    ));
+}
+      /**
      *  Create category
      */
     public function create()
@@ -117,7 +122,7 @@ public function edit(Category $category)
         'name' => 'required|string|max:255',
         'type' => 'required|in:income,expense',
         'description' => 'nullable|string',
-        'budget' => 'nullable|numeric',
+        // 'budget' => 'nullable|numeric',
         'color' => 'nullable|string',
     ]);
 
@@ -126,7 +131,7 @@ public function edit(Category $category)
         'name' => $validated['name'],
         'type' => $validated['type'],
         'description' => $validated['description'] ?? null,
-        'budget' => $validated['budget'] ?? null,
+        // 'budget' => $validated['budget'] ?? null,
         'color' => $validated['color'] ?? 'green',
     ]);
 
@@ -147,7 +152,7 @@ public function edit(Category $category)
             'name' => 'required|string|max:255',
             'type' => 'required|in:income,expense',
             'description' => 'nullable|string',
-            'budget' => 'nullable|numeric',
+            // 'budget' => 'nullable|numeric',
             'color' => 'nullable|string',
         ]);
     

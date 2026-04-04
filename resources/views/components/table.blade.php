@@ -17,20 +17,20 @@
 <div class="flex items-center justify-between mt-6">
 
     <!-- Info -->
-    <p class="text-sm text-gray-500">
+    {{-- <p class="text-sm text-gray-500">
         Showing 1 to 10 of 50 results
-    </p>
+    </p> --}}
 
     <!-- Pagination -->
     <div class="flex items-center gap-1">
 
         <!-- Previous -->
-        <button class="px-3 py-1.5 text-sm rounded-lg border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800">
+        {{-- <button class="px-3 py-1.5 text-sm rounded-lg border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800">
             Prev
-        </button>
+        </button> --}}
 
         <!-- Page Numbers -->
-        <button class="px-3 py-1.5 text-sm rounded-lg bg-green-600 text-white">
+        {{-- <button class="px-3 py-1.5 text-sm rounded-lg bg-green-600 text-white">
             1
         </button>
 
@@ -40,12 +40,12 @@
 
         <button class="px-3 py-1.5 text-sm rounded-lg border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800">
             3
-        </button>
+        </button> --}}
 
         <!-- Next -->
-        <button class="px-3 py-1.5 text-sm rounded-lg border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800">
+        {{-- <button class="px-3 py-1.5 text-sm rounded-lg border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800">
             Next
-        </button>
+        </button> --}}
 
     </div>
 </div>

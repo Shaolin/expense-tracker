@@ -11,43 +11,49 @@ use Illuminate\Support\Facades\Auth;
 class BudgetController extends Controller
 {
     
-
-    public function index()
-{
-    $budgets = \App\Models\Budget::with('category')
-        ->where('user_id', auth()->id())
-        ->get();
-
-    $totalBudget = $budgets->sum('amount');
-
-    $totalSpent = 0;
-
-    foreach ($budgets as $budget) {
-        $spent = \App\Models\Transaction::where('user_id', auth()->id())
-            ->where('category_id', $budget->category_id)
-            ->where('type', 'expense')
-            ->whereMonth('date', \Carbon\Carbon::parse($budget->month)->month)
-            ->whereYear('date', \Carbon\Carbon::parse($budget->month)->year)
-            ->sum('amount');
-
-        $budget->spent = $spent;
-        $budget->percentage = $budget->amount > 0 
-            ? min(100, ($spent / $budget->amount) * 100)
-            : 0;
-
-        $totalSpent += $spent;
+    public function index(Request $request)
+    {
+        $userId = auth()->id();
+    
+        // Get selected month from query or default to current month
+        $selectedMonth = $request->query('month', now()->format('Y-m'));
+        $parsedMonth = \Carbon\Carbon::parse($selectedMonth);
+    
+        // Fetch budgets for the selected month only
+        $budgets = Budget::with('category')
+            ->where('user_id', $userId)
+            ->where('month', $selectedMonth)
+            ->get();
+    
+        $totalBudget = $budgets->sum('amount');
+        $totalSpent = 0;
+    
+        foreach ($budgets as $budget) {
+            $spent = \App\Models\Transaction::where('user_id', $userId)
+                ->where('category_id', $budget->category_id)
+                ->where('type', 'expense')
+                ->whereMonth('date', $parsedMonth->month)
+                ->whereYear('date', $parsedMonth->year)
+                ->sum('amount');
+    
+            $budget->spent = $spent;
+            $budget->percentage = $budget->amount > 0 
+                ? min(100, ($spent / $budget->amount) * 100)
+                : 0;
+    
+            $totalSpent += $spent;
+        }
+    
+        $remaining = $totalBudget - $totalSpent;
+    
+        return view('budgets.index', compact(
+            'budgets',
+            'totalBudget',
+            'totalSpent',
+            'remaining',
+            'selectedMonth'
+        ));
     }
-
-    $remaining = $totalBudget - $totalSpent;
-
-    return view('budgets.index', compact(
-        'budgets',
-        'totalBudget',
-        'totalSpent',
-        'remaining'
-    ));
-}
-
 
     /**
      * Show form to create budget

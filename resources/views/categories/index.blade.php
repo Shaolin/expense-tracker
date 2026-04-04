@@ -3,6 +3,19 @@
 @section('content')
 <div class="p-6 space-y-6">
 
+    <!-- Month Selector -->
+<form method="GET" action="{{ route('categories.index') }}" class="mb-6 flex items-center gap-4">
+    <label for="month" class="text-gray-400">Select Month:</label>
+    <input 
+        type="month" 
+        id="month" 
+        name="month" 
+        value="{{ $selectedMonth ?? now()->format('Y-m') }}"
+        class="px-3 py-2 rounded-lg bg-gray-800 text-white border border-gray-700"
+        onchange="this.form.submit()"
+    >
+</form>
+
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>

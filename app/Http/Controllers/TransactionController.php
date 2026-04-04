@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
+// use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class TransactionController extends Controller
 {
@@ -26,7 +28,7 @@ class TransactionController extends Controller
             ->when($type, fn ($q) => $q->type($type))
             ->when($start && $end, fn ($q) => $q->betweenDates($start, $end))
             ->latest('date')
-            ->paginate(10);
+             ->paginate(10);
 
         return view('transactions.index', compact('transactions'));
     }
@@ -145,17 +147,53 @@ class TransactionController extends Controller
 
 
 
-public function expenses()
+    public function expenses(Request $request)
 {
-    $transactions = Transaction::with('category')
-        ->forUser(auth()->id())
+    $userId = auth()->id();
+
+    // 📅 Selected month (default = current)
+    $selectedMonth = $request->query('month', now()->format('Y-m'));
+    $parsedMonth = \Carbon\Carbon::parse($selectedMonth);
+
+    $query = Transaction::with('category')
+        ->forUser($userId)
         ->type('expense')
-        ->latest('date')
-        ->paginate(10);
+        ->whereMonth('date', $parsedMonth->month)
+        ->whereYear('date', $parsedMonth->year);
 
-    $categories = Category::all();
+    // 🔍 Search
+    if ($request->search) {
+        $query->where(function ($q) use ($request) {
+            $q->where('description', 'like', '%' . $request->search . '%')
+              ->orWhereHas('category', function ($q2) use ($request) {
+                  $q2->where('name', 'like', '%' . $request->search . '%');
+              });
+        });
+    }
 
-    return view('expenses.index', compact('transactions', 'categories'));
+    // 📂 Category filter
+    if ($request->category_id) {
+        $query->where('category_id', $request->category_id);
+    }
+
+    //  REMOVE this (conflicts with month filter)
+    // if ($request->date) {
+    //     $query->whereDate('date', $request->date);
+    // }
+
+    $transactions = $query->latest('date')
+        ->paginate(10)
+        ->withQueryString();
+
+    $categories = Category::where('type', 'expense')
+        ->where('user_id', $userId)
+        ->get();
+
+    return view('expenses.index', compact(
+        'transactions',
+        'categories',
+        'selectedMonth'
+    ));
 }
 
 private function authorizeIncome(Transaction $transaction)
@@ -165,21 +203,63 @@ private function authorizeIncome(Transaction $transaction)
     }
 }
 
-public function indexIncome()
+
+
+public function indexIncome(Request $request)
 {
-    $transactions = Transaction::with('category')
+    $userId = Auth::id();
+
+    // 📅 Selected month (default = current month)
+    $selectedMonth = $request->query('month', now()->format('Y-m'));
+    $parsedMonth = Carbon::parse($selectedMonth);
+
+    $query = Transaction::with('category')
         ->where('type', 'income')
-        ->where('user_id', Auth::id())
-        ->latest()
-        ->paginate(10); 
+        ->where('user_id', $userId)
+        ->whereMonth('date', $parsedMonth->month)
+        ->whereYear('date', $parsedMonth->year);
 
-        $totalIncome = Transaction::where('type', 'income')
-        ->where('user_id', Auth::id())
+    // 🔍 Search
+    if ($request->search) {
+        $query->where(function ($q) use ($request) {
+            $q->where('description', 'like', '%' . $request->search . '%')
+              ->orWhereHas('category', function ($q2) use ($request) {
+                  $q2->where('name', 'like', '%' . $request->search . '%');
+              });
+        });
+    }
+
+    // 📂 Category filter
+    if ($request->category_id) {
+        $query->where('category_id', $request->category_id);
+    }
+
+    //  REMOVE this (conflicts with month filter)
+    // if ($request->date) {
+    //     $query->whereDate('date', $request->date);
+    // }
+
+    $transactions = $query->latest('date')
+        ->paginate(10)
+        ->withQueryString();
+
+    $categories = Category::where('type', 'income')
+        ->where('user_id', $userId)
+        ->get();
+
+    // 💰 TOTAL INCOME FOR SELECTED MONTH (NOT CURRENT)
+    $totalIncomeThisMonth = Transaction::where('type', 'income')
+        ->where('user_id', $userId)
+        ->whereMonth('date', $parsedMonth->month)
+        ->whereYear('date', $parsedMonth->year)
         ->sum('amount');
-        
 
-    
-    return view('income.index', compact('transactions', 'totalIncome'));
+    return view('income.index', compact(
+        'transactions',
+        'categories',
+        'totalIncomeThisMonth',
+        'selectedMonth'
+    ));
 }
 
 public function createIncome()

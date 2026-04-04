@@ -6,7 +6,7 @@
     <!-- Header -->
     <div>
         <h1 class="text-2xl font-bold text-white">Add Category</h1>
-        <p class="text-gray-400">Create a new category and set a monthly budget</p>
+        <p class="text-gray-400">Create a new category</p>
     </div>
 
     <!-- Form -->
@@ -72,7 +72,7 @@
         </div>
 
         <!-- Budget -->
-        <div>
+        {{-- <div>
             <label class="text-sm text-gray-400">Monthly Budget</label>
             <input 
                 type="number" 
@@ -82,7 +82,7 @@
                 class="w-full mt-1 p-2 border border-gray-600 rounded-lg bg-transparent text-white focus:ring-2 focus:ring-green-500"
                 placeholder="e.g. 500"
             >
-        </div>
+        </div> --}}
 
         <!-- Color (for your cards) -->
         <div>

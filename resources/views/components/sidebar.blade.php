@@ -5,52 +5,55 @@
 
     <!-- Logo -->
     <div class="p-6 text-xl font-bold text-gray-900 dark:text-white flex items-center justify-between">
-        {{-- <span x-show="sidebarOpen">ExpenseTracker</span> --}}
-        
         <span x-show="sidebarOpen" x-transition>ExpenseTracker</span>
         <span x-show="!sidebarOpen">💰</span>
-       
     </div>
 
     <!-- Nav -->
     <nav class="flex-1 px-2 space-y-2">
 
-        <!-- Item -->
-        <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white">
-            {{-- <span>🏠</span> --}}
+        <!-- Dashboard -->
+        <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-lg
+            {{ request()->routeIs('dashboard') ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800' }}">
             <x-icon name="dashboard" />
-            
             <span x-show="sidebarOpen" x-transition>Dashboard</span>
         </a>
 
-        
+        <!-- Expenses -->
         <a href="{{ route('expenses.index') }}" 
-   class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800">
-     {{-- <span>💸</span> --}}
-    <x-icon name="expenses" />
-    <span x-show="sidebarOpen" x-transition>Expenses</span>
-</a>
+           class="flex items-center gap-3 px-3 py-2 rounded-lg
+           {{ request()->routeIs('expenses.*') ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800' }}">
+            <x-icon name="expenses" />
+            <span x-show="sidebarOpen" x-transition>Expenses</span>
+        </a>
 
-        <a href="{{ route('income.index') }}"  class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800">
-            {{-- <span>💰</span> --}}
+        <!-- Income -->
+        <a href="{{ route('income.index') }}"  
+           class="flex items-center gap-3 px-3 py-2 rounded-lg
+           {{ request()->routeIs('income.*') ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800' }}">
             <x-icon name="income" />
             <span x-show="sidebarOpen" x-transition>Income</span>
         </a>
 
-        <a href="{{ route('categories.index') }}"  class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800">
-            {{-- <span>📂</span> --}}
+        <!-- Categories -->
+        <a href="{{ route('categories.index') }}"  
+           class="flex items-center gap-3 px-3 py-2 rounded-lg
+           {{ request()->routeIs('categories.*') ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800' }}">
             <x-icon name="categories" />
             <span x-show="sidebarOpen" x-transition>Categories</span>
         </a>
 
-        <a href="{{ route('budgets.index') }}"  class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800">
-            {{-- <span>📊</span> --}}
+        <!-- Budgets -->
+        <a href="{{ route('budgets.index') }}"  
+           class="flex items-center gap-3 px-3 py-2 rounded-lg
+           {{ request()->routeIs('budgets.*') ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800' }}">
             <x-icon name="categories" />
             <span x-show="sidebarOpen" x-transition>Budgets</span>
         </a>
 
-        <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800">
-            {{-- <span>⚙️</span> --}}
+        <!-- Settings -->
+        <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-lg
+            {{ request()->routeIs('settings.*') ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800' }}">
             <x-icon name="budgets" />
             <span x-show="sidebarOpen" x-transition>Settings</span>
         </a>
