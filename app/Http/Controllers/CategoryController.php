@@ -89,7 +89,7 @@ class CategoryController extends Controller
     return view('categories.index', compact(
         'expenseCategories',
         'incomeCategories',
-        'selectedMonth' // pass selected month to blade
+        'selectedMonth' // 
     ));
 }
       /**

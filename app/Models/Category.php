@@ -62,4 +62,8 @@ public function budgets()
 {
     return $this->hasMany(Budget::class);
 }
+public function transactions()
+{
+    return $this->hasMany(\App\Models\Transaction::class);
+}
 }

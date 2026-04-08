@@ -13,7 +13,7 @@
     <nav class="flex-1 px-2 space-y-2">
 
         <!-- Dashboard -->
-        <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-lg
+        <a href="{{ route('dashboard') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg
             {{ request()->routeIs('dashboard') ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800' }}">
             <x-icon name="dashboard" />
             <span x-show="sidebarOpen" x-transition>Dashboard</span>

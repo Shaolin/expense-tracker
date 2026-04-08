@@ -3,123 +3,138 @@
 @section('content')
 <div class="p-6 space-y-6 bg-black min-h-screen">
 
-     <!-- Header -->
-     <div class="mb-6">
-        <h1 class="text-3xl font-bold">Dashboard</h1>
+    <!-- Header -->
+    {{-- <div class="mb-6">
+        <h1 class="text-3xl font-bold text-white">Dashboard</h1>
         <p class="text-gray-400">Overview of your financial activity this month</p>
+    </div> --}}
+
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+
+        <!-- Title -->
+        <div>
+            <h1 class="text-3xl font-bold text-white">Dashboard</h1>
+            <p class="text-gray-400">Overview of your financial activity</p>
+        </div>
+    
+        <!-- Month Selector -->
+        <form method="GET" action="{{ route('dashboard') }}" class="flex items-center gap-4">
+            <label class="text-gray-400 text-sm">Month:</label>
+    
+            <input 
+                type="month" 
+                name="month" 
+                value="{{ $selectedMonth ?? now()->format('Y-m') }}"
+                class="px-3 py-2 rounded-lg bg-gray-800 text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                onchange="this.form.submit()"
+            >
+        </form>
+    
     </div>
 
     <!-- Top Stat Cards -->
-    
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <x-dashboard.stat-card 
-        title="Total Income" 
-        amount="$5,725.00" 
-        change="+12.5% from last month"
-        color="green"
-        icon="income"
-        />
-
-        <x-dashboard.stat-card 
-        title="Total Expenses" 
-        amount="$1,073.02" 
-        change="-8.2% from last month"
-        :positive="false"
-        color="red"
-        icon="expenses"
-        />
-
-        <x-dashboard.stat-card 
-        title="Current Balance" 
-        amount="$4,651.98"
-        color="blue"
-        icon="balance"
-        />
-
-        <x-dashboard.stat-card 
-        title="Savings Rate" 
-        amount="81%" 
-        change="+5.3% improvement"
-        color="purple"
-        icon="savings"
-        />
+        @foreach($stats as $stat)
+            <x-dashboard.stat-card 
+                :title="$stat['title']"
+                :amount="$stat['amount']"
+                :change="$stat['change']"
+                :positive="$stat['positive']"
+                :color="$stat['color']"
+                :icon="$stat['icon']"
+            />
+        @endforeach
     </div>
 
-    <!-- Charts Section -->
+    <!-- Charts + Budget -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <x-dashboard.chart-card />
 
-        <x-dashboard.budget-card 
-            :items="[
-                ['name' => 'Food & Dining', 'spent' => 268, 'total' => 800, 'color' => 'green'],
-                ['name' => 'Transportation', 'spent' => 192, 'total' => 400, 'color' => 'blue'],
-                ['name' => 'Utilities', 'spent' => 205, 'total' => 300, 'color' => 'yellow'],
-                ['name' => 'Entertainment', 'spent' => 136, 'total' => 200, 'color' => 'purple'],
-                ['name' => 'Shopping', 'spent' => 219, 'total' => 500, 'color' => 'pink'],
-                ['name' => 'Healthcare', 'spent' => 53, 'total' => 250, 'color' => 'cyan'],
-            ]"
-        />
+        {{-- <x-dashboard.chart-card :chartData="$chartData" /> --}}
+        <x-dashboard.chart-card :data="$chartData" />
+       
+
+        <x-dashboard.budget-card :items="$budgetItems" />
+
     </div>
 
-    <!-- Transactions Section -->
-<x-dashboard.transactions-card 
-:transactions="[
-    ['title' => 'Lunch delivery', 'category' => 'Food & Dining', 'date' => 'Mar 14', 'amount' => 24.99, 'type' => 'expense'],
-    ['title' => 'Weekly grocery shopping', 'category' => 'Food & Dining', 'date' => 'Mar 13', 'amount' => 156.42, 'type' => 'expense'],
-    ['title' => 'Gas station fill-up', 'category' => 'Transportation', 'date' => 'Mar 13', 'amount' => 52.30, 'type' => 'expense'],
-    ['title' => 'Credit card rewards', 'category' => 'Cashback', 'date' => 'Mar 13', 'amount' => 50.00, 'type' => 'income'],
-    ['title' => 'Electric bill', 'category' => 'Utilities', 'date' => 'Mar 12', 'amount' => 124.89, 'type' => 'expense'],
-    ['title' => 'Netflix subscription', 'category' => 'Entertainment', 'date' => 'Mar 11', 'amount' => 15.99, 'type' => 'expense'],
-    ['title' => 'Etsy sales', 'category' => 'Side Business', 'date' => 'Mar 11', 'amount' => 200.00, 'type' => 'income'],
-    ['title' => 'New running shoes', 'category' => 'Shopping', 'date' => 'Mar 10', 'amount' => 129.00, 'type' => 'expense'],
-]"
-
-/>
+    <!-- Transactions -->
+    <x-dashboard.transactions-card :transactions="$transactions" />
 
 </div>
-
 @endsection
+
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 <script>
+const chartData = @json($chartData);
+
+// ✅ Ensure numbers are treated as numbers
+const totalSpent = chartData.reduce((sum, item) => sum + Number(item.spent), 0);
+
 const ctx = document.getElementById('expenseChart');
 
 if (ctx) {
+
+    // ✅ Center text plugin (fixed)
+    const centerTextPlugin = {
+        id: 'centerText',
+        beforeDraw(chart) {
+            const { width, height, ctx } = chart;
+
+            ctx.save(); // ✅ always save first
+
+            const fontSize = (height / 140).toFixed(2);
+            ctx.textBaseline = 'middle';
+            ctx.textAlign = 'center';
+
+            const text = '₦' + totalSpent.toLocaleString();
+            const subText = 'Total Spent';
+
+            // Main text
+            ctx.font = `${fontSize}em sans-serif`;
+            ctx.fillStyle = '#ffffff';
+            ctx.fillText(text, width / 2, height / 2 - 10);
+
+            // Sub text
+            ctx.font = `${fontSize * 0.6}em sans-serif`;
+            ctx.fillStyle = '#9ca3af';
+            ctx.fillText(subText, width / 2, height / 2 + 15);
+
+            ctx.restore(); // ✅ restore after drawing
+        }
+    };
+
     new Chart(ctx, {
         type: 'doughnut',
         data: {
-            labels: [
-                'Food & Dining',
-                'Transportation',
-                'Utilities',
-                'Entertainment',
-                'Shopping',
-                'Healthcare'
-            ],
+            labels: chartData.map(i => i.name),
             datasets: [{
-                data: [268, 192, 205, 136, 219, 53],
-                backgroundColor: [
-                    '#22c55e',
-                    '#3b82f6',
-                    '#f59e0b',
-                    '#8b5cf6',
-                    '#ec4899',
-                    '#06b6d4'
-                ],
+                data: chartData.map(i => Number(i.spent)),
+                backgroundColor: chartData.map(i => {
+                    switch(i.color){
+                        case 'green': return '#22c55e';
+                        case 'red': return '#ef4444';
+                        case 'blue': return '#3b82f6';
+                        case 'purple': return '#8b5cf6';
+                        case 'pink': return '#ec4899';
+                        case 'cyan': return '#06b6d4';
+                        case 'yellow': return '#f59e0b';
+                        default: return '#3b82f6';
+                    }
+                }),
                 borderWidth: 0
             }]
         },
         options: {
-            cutout: '70%',
+            responsive: true,              // ✅ important
+            maintainAspectRatio: false,    // ✅ important
+            cutout: '75%',                 // nicer look
             plugins: {
-                legend: {
-                    display: false
-                }
+                legend: { display: false }
             }
-        }
+        },
+        plugins: [centerTextPlugin] // 🔥 THIS WAS MISSING
     });
 }
 </script>
 @endpush
-

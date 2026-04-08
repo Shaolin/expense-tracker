@@ -33,10 +33,19 @@
 
                     <!-- Info -->
                     <div>
-                        <p class="font-medium">{{ $transaction['title'] }}</p>
+                        {{-- <p class="font-medium">{{ $transaction['title'] }}</p>
+                        <p class="text-sm text-gray-400">
+                            {{ $transaction['category'] }} • {{ $transaction['date'] }}
+                        </p> --}}
                         <p class="text-sm text-gray-400">
                             {{ $transaction['category'] }} • {{ $transaction['date'] }}
                         </p>
+                        
+                        @if(!empty($transaction['description']))
+                            <p class="text-xs text-gray-500 mt-1">
+                                {{ $transaction['description'] }}
+                            </p>
+                        @endif
                     </div>
                 </div>
 
@@ -45,7 +54,8 @@
                     {{ $transaction['type'] === 'income' ? 'text-green-400' : 'text-gray-200' }}">
                     
                     {{ $transaction['type'] === 'income' ? '+' : '-' }}
-                    ${{ number_format($transaction['amount'], 2) }}
+                  
+                    ₦{{ number_format($transaction['amount'], 2) }}
                 </div>
             </div>
         @endforeach
@@ -69,10 +79,15 @@
             <div class="space-y-2 text-sm">
                 <p><span class="text-gray-400">Title:</span> <span x-text="selected.title"></span></p>
                 <p><span class="text-gray-400">Category:</span> <span x-text="selected.category"></span></p>
+                <p>
+                    <span class="text-gray-400">Description:</span> 
+                    <span x-text="selected.description || '—'"></span>
+                </p>
                 <p><span class="text-gray-400">Date:</span> <span x-text="selected.date"></span></p>
                 <p>
                     <span class="text-gray-400">Amount:</span> 
-                    $<span x-text="selected.amount"></span>
+                    {{-- $<span x-text="selected.amount"></span> --}}
+                    ₦<span x-text="Number(selected.amount).toLocaleString()"></span>
                 </p>
                 <p>
                     <span class="text-gray-400">Type:</span> 

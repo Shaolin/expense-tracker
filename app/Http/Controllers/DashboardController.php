@@ -18,6 +18,33 @@ class DashboardController extends Controller
     $parsedMonth = \Carbon\Carbon::parse($selectedMonth);
     $lastMonth = $parsedMonth->copy()->subMonth();
 
+    // LAST MONTH DATA
+$lastIncome = \App\Models\Transaction::where('user_id', $userId)
+->where('type', 'income')
+->whereMonth('date', $lastMonth->month)
+->whereYear('date', $lastMonth->year)
+->sum('amount');
+
+$lastExpenses = \App\Models\Transaction::where('user_id', $userId)
+->where('type', 'expense')
+->whereMonth('date', $lastMonth->month)
+->whereYear('date', $lastMonth->year)
+->sum('amount');
+
+$lastBalance = $lastIncome - $lastExpenses;
+
+$lastSavingsRate = $lastIncome > 0 
+? ($lastBalance / $lastIncome) * 100 
+: 0;
+
+function percentChange($current, $previous) {
+    if ($previous == 0) return null;
+
+    return (($current - $previous) / $previous) * 100;
+}
+
+
+
     // -------------------------
     // 1. TOTALS (STATS)
     // -------------------------
@@ -39,6 +66,19 @@ class DashboardController extends Controller
         ? ($balance / $totalIncome) * 100 
         : 0;
 
+
+        $incomeChange = percentChange($totalIncome, $lastIncome);
+$expenseChange = percentChange($totalExpenses, $lastExpenses);
+$balanceChange = percentChange($balance, $lastBalance);
+$savingsChange = percentChange($savingsRate, $lastSavingsRate);
+
+function formatChange($value) {
+    if ($value === null) return null;
+
+    $sign = $value >= 0 ? '+' : '';
+    return $sign . number_format($value, 1) . '% from last month';
+}
+
     // -------------------------
     // 2. STATS ARRAY
     // -------------------------
@@ -46,32 +86,32 @@ class DashboardController extends Controller
         [
             'title' => 'Total Income',
             'amount' => '₦' . number_format($totalIncome, 2),
-            'change' => null,
-            'positive' => true,
+            'change' => formatChange($incomeChange),
+            'positive' => $incomeChange >= 0,
             'color' => 'green',
             'icon' => 'income',
         ],
         [
             'title' => 'Total Expenses',
             'amount' => '₦' . number_format($totalExpenses, 2),
-            'change' => null,
-            'positive' => false,
+            'change' => formatChange($expenseChange),
+            'positive' => $expenseChange <= 0, // 🔥 LESS expense = GOOD
             'color' => 'red',
             'icon' => 'expenses',
         ],
         [
             'title' => 'Current Balance',
             'amount' => '₦' . number_format($balance, 2),
-            'change' => null,
-            'positive' => true,
+            'change' => formatChange($balanceChange),
+            'positive' => $balanceChange >= 0,
             'color' => 'blue',
             'icon' => 'balance',
         ],
         [
             'title' => 'Savings Rate',
             'amount' => number_format($savingsRate, 1) . '%',
-            'change' => null,
-            'positive' => true,
+            'change' => formatChange($savingsChange),
+            'positive' => $savingsChange >= 0,
             'color' => 'purple',
             'icon' => 'savings',
         ],
@@ -138,51 +178,3 @@ class DashboardController extends Controller
     
     
 }
-
-<x-guest-layout>
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
-
-    <form method="POST" action="{{ route('login') }}">
-        @csrf
-
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
-        </div>
-
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
-
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
-
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
-
-        <!-- Remember Me -->
-        <div class="block mt-4">
-            <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" name="remember">
-                <span class="ms-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
-            </label>
-        </div>
-
-        <div class="flex items-center justify-end mt-4">
-            @if (Route::has('password.request'))
-                <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
-                    {{ __('Forgot your password?') }}
-                </a>
-            @endif
-
-            <x-primary-button class="ms-3">
-                {{ __('Log in') }}
-            </x-primary-button>
-        </div>
-    </form>
-</x-guest-layout>
