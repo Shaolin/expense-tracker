@@ -4,13 +4,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Traits\BelongsToOrganization;
 
 class Budget extends Model
 {
     use HasFactory;
+    use BelongsToOrganization;
 
     protected $fillable = [
         'user_id',
+        'organization_id',
         'category_id',
         'amount',
         'month',

@@ -4,16 +4,21 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Traits\BelongsToOrganization;
+
 
 class Transaction extends Model
 {
     use HasFactory;
+    use BelongsToOrganization;
+
 
     /**
      * Mass assignable attributes
      */
     protected $fillable = [
         'user_id',
+        'organization_id',
         'category_id',
         'amount',
         'type',

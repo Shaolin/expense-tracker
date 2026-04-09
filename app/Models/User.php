@@ -55,4 +55,11 @@ public function budgets()
 {
     return $this->hasMany(Budget::class);
 }
+
+public function organizations()
+{
+    return $this->belongsToMany(Organization::class)
+                ->withPivot('role')
+                ->withTimestamps();
+}
 }

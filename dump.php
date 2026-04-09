@@ -1,79 +1,27 @@
-@push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
+<div x-data="{ open: false }" class="relative">
     
- 
+    <div x-data="{ open: false }" class="relative">
+        <button @click="open = !open" 
+                class="flex items-center gap-2 px-3 py-2 rounded-lg w-full
+                       bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white">
+            {{ auth()->user()->organizations()->where('organizations.id', session('organization_id'))->first()->name }}
+            <x-icon name="chevron-down" />
+        </button>
+    </div>
 
-const chartData = @json($chartData);
-
-// ✅ Ensure numbers are treated as numbers
-const totalSpent = chartData.reduce((sum, item) => sum + Number(item.spent), 0);
-
-const ctx = document.getElementById('expenseChart');
-
-if (ctx) {
-
-    // ✅ Center text plugin (fixed)
-    const centerTextPlugin = {
-        id: 'centerText',
-        beforeDraw(chart) {
-            const { width, height, ctx } = chart;
-
-            ctx.save(); // ✅ always save first
-
-            const fontSize = (height / 140).toFixed(2);
-            ctx.textBaseline = 'middle';
-            ctx.textAlign = 'center';
-
-             const text = '₦' + totalSpent.toLocaleString();
-            
-            const subText = 'Total Spent';
-
-            // Main text
-            ctx.font = `${fontSize}em sans-serif`;
-            ctx.fillStyle = '#ffffff';
-            ctx.fillText(text, width / 2, height / 2 - 10);
-
-            // Sub text
-            ctx.font = `${fontSize * 0.6}em sans-serif`;
-            ctx.fillStyle = '#9ca3af';
-            ctx.fillText(subText, width / 2, height / 2 + 15);
-
-            ctx.restore(); // ✅ restore after drawing
-        }
-    };
-
-    new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-            labels: chartData.map(i => i.name),
-            datasets: [{
-                data: chartData.map(i => Number(i.spent)),
-                backgroundColor: chartData.map(i => {
-                    switch(i.color){
-                        case 'green': return '#22c55e';
-                        case 'red': return '#ef4444';
-                        case 'blue': return '#3b82f6';
-                        case 'purple': return '#8b5cf6';
-                        case 'pink': return '#ec4899';
-                        case 'cyan': return '#06b6d4';
-                        case 'yellow': return '#f59e0b';
-                        default: return '#3b82f6';
-                    }
-                }),
-                borderWidth: 0
-            }]
-        },
-        options: {
-            responsive: true,              // ✅ important
-            maintainAspectRatio: false,    // ✅ important
-            cutout: '75%',                 // nicer look
-            plugins: {
-                legend: { display: false }
-            }
-        },
-        plugins: [centerTextPlugin] // 🔥 THIS WAS MISSING
-    });
-}
-</script>
-@endpush
+    <div x-show="open" @click.outside="open = false"
+         class="absolute mt-1 w-full bg-white dark:bg-gray-900 rounded-lg shadow-lg z-50">
+        @foreach(auth()->user()->organizations as $org)
+            <form action="{{ route('organizations.switch') }}" method="POST">
+                @csrf
+                <input type="hidden" name="organization_id" value="{{ $org->id }}">
+                <button type="submit"
+                        class="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800
+                               {{ session('organization_id') == $org->id ? 'font-semibold' : '' }}">
+                    {{ $org->name }} 
+                    @if($org->is_personal) (Personal) @endif
+                </button>
+            </form>
+        @endforeach
+    </div>
+</div>
