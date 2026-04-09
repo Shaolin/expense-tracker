@@ -42,7 +42,10 @@
 
             <!-- Amount -->
             <div>
-                <label class="block text-sm mb-1 text-gray-600 dark:text-gray-300">Amount (₦)</label>
+                {{-- <label class="block text-sm mb-1 text-gray-600 dark:text-gray-300">Amount (₦)</label> --}}
+                <label class="block text-sm mb-1 text-gray-600 dark:text-gray-300">
+                    Budget Amount ({{ currency_symbol() }})
+                </label>
 
                 <input type="number" name="amount" step="0.01"
                 value="{{ $transaction->amount }}"

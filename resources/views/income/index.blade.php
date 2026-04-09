@@ -65,7 +65,8 @@ $nextMonth = \Carbon\Carbon::parse($selectedMonth)->addMonth()->format('Y-m');
                 Total Income ({{ \Carbon\Carbon::parse($selectedMonth)->format('F Y') }})
             </p>
             <h2 class="text-3xl font-bold text-white-500 mt-1">
-                ₦{{ number_format($totalIncomeThisMonth, 2) }}
+                {{-- ₦{{ number_format($totalIncomeThisMonth, 2) }} --}}
+                {{ money($totalIncomeThisMonth, 2) }}
             </h2>
         </div>
     </div>
@@ -163,7 +164,9 @@ $nextMonth = \Carbon\Carbon::parse($selectedMonth)->addMonth()->format('Y-m');
                     </td>
         
                     <td class="px-6 py-4 text-right font-medium text-green-500">
-                        +₦{{ number_format($transaction->amount, 2) }}
+                    
+                        {{-- +₦{{ number_format($transaction->amount, 2) }} --}}
+                        {{ money($transaction->amount, 2) }}
                     </td>
         
                     <td class="px-6 py-4 text-right">

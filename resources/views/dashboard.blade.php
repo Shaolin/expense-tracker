@@ -65,29 +65,34 @@
 
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <script>
 const chartData = @json($chartData);
 
-// ✅ Ensure numbers are treated as numbers
+//  Pass currency symbol from Laravel
+const currencySymbol = "{{ currency_symbol() }}";
+
+//  Ensure numbers are treated as numbers
 const totalSpent = chartData.reduce((sum, item) => sum + Number(item.spent), 0);
 
 const ctx = document.getElementById('expenseChart');
 
 if (ctx) {
 
-    // ✅ Center text plugin (fixed)
+    //  Center text plugin (fixed)
     const centerTextPlugin = {
         id: 'centerText',
         beforeDraw(chart) {
             const { width, height, ctx } = chart;
 
-            ctx.save(); // ✅ always save first
+            ctx.save();
 
             const fontSize = (height / 140).toFixed(2);
             ctx.textBaseline = 'middle';
             ctx.textAlign = 'center';
 
-            const text = '₦' + totalSpent.toLocaleString();
+            //  Dynamic currency
+            const text = currencySymbol + totalSpent.toLocaleString();
             const subText = 'Total Spent';
 
             // Main text
@@ -100,7 +105,7 @@ if (ctx) {
             ctx.fillStyle = '#9ca3af';
             ctx.fillText(subText, width / 2, height / 2 + 15);
 
-            ctx.restore(); // ✅ restore after drawing
+            ctx.restore();
         }
     };
 
@@ -126,14 +131,14 @@ if (ctx) {
             }]
         },
         options: {
-            responsive: true,              // ✅ important
-            maintainAspectRatio: false,    // ✅ important
-            cutout: '75%',                 // nicer look
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '75%',
             plugins: {
                 legend: { display: false }
             }
         },
-        plugins: [centerTextPlugin] // 🔥 THIS WAS MISSING
+        plugins: [centerTextPlugin]
     });
 }
 </script>

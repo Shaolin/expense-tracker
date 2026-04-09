@@ -20,9 +20,11 @@
                     {{ $item['name'] }}
                 </span>
                 <span class="text-gray-400">
-                    ₦{{ number_format($spent, 2) }}
+                    {{-- ₦{{ number_format($spent, 2) }} --}}
+                    {{ money($spent, 2) }}
                     @if($hasBudget)
-                        / ₦{{ number_format($total, 2) }}
+                        {{-- / ₦{{ number_format($total, 2) }} --}}
+                      /  {{ money($total, 2) }}
                     @else
                         <span class="text-yellow-400 text-xs">(No budget set)</span>
                     @endif
@@ -36,11 +38,18 @@
                     style="width: {{ $percentage }}%">
                 </div>
             </div>
-            <p class="text-xs mt-1 {{ $overBudget ? 'text-red-400' : 'text-gray-400' }}">
+            {{-- <p class="text-xs mt-1 {{ $overBudget ? 'text-red-400' : 'text-gray-400' }}">
                 {{ $overBudget 
                     ? 'Over budget by ₦' . number_format($spent - $total, 2)
                     : '₦' . number_format($total - $spent, 2) . ' remaining'
                 }}
+            </p> --}}
+            <p class="text-xs mt-1 {{ $overBudget ? 'text-red-400' : 'text-gray-400' }}">
+                @if ($overBudget)
+                    Over budget by {{ money($spent - $total, 2) }}
+                @else
+                    {{ money($total - $spent, 2) }} remaining
+                @endif
             </p>
             @endif
         </div>

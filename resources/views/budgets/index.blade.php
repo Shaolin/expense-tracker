@@ -43,14 +43,16 @@
         <!-- Total Budget -->
         <div class="bg-gray-900 text-white rounded-2xl p-6 shadow flex flex-col justify-between">
             <p class="text-sm text-gray-400">Total Budget</p>
-            <h2 class="text-3xl font-bold mt-2">₦{{ number_format($totalBudget) }}</h2>
+            {{-- <h2 class="text-3xl font-bold mt-2">₦{{ number_format($totalBudget) }}</h2> --}}
+            <h2 class="text-3xl font-bold mt-2">{{ money($totalBudget, 0) }}</h2>
             <p class="text-xs text-gray-500">Monthly allocation</p>
         </div>
 
         <!-- Total Spent -->
         <div class="bg-gray-900 text-white rounded-2xl p-6 shadow flex flex-col justify-between">
             <p class="text-sm text-gray-400">Total Spent</p>
-            <h2 class="text-3xl font-bold mt-2">₦{{ number_format($totalSpent) }}</h2>
+            {{-- <h2 class="text-3xl font-bold mt-2">₦{{ number_format($totalSpent) }}</h2> --}}
+            <h2 class="text-3xl font-bold mt-2">{{ money($totalSpent, 0) }}</h2>
             <p class="text-xs text-gray-500">
                 {{ $totalBudget > 0 ? round(($totalSpent / $totalBudget) * 100) : 0 }}% of budget used
             </p>
@@ -60,7 +62,9 @@
         <div class="bg-gray-900 text-white rounded-2xl p-6 shadow flex flex-col justify-between">
             <p class="text-sm text-gray-400">Remaining</p>
             <h2 class="text-3xl font-bold mt-2 text-green-500">
-                ₦{{ number_format($totalBudget - $totalSpent) }}
+                {{-- ₦{{ number_format($totalBudget - $totalSpent) }} --}}
+                {{ money($totalBudget - $totalSpent, 0) }}
+               
             </h2>
             <p class="text-xs text-gray-500">Left to spend</p>
         </div>
@@ -110,14 +114,16 @@
                         <!-- Spent -->
                         <div class="text-right">
                             <p class="text-gray-400">Spent</p>
-                            <p class="font-semibold">₦{{ number_format($budget->spent) }}</p>
+                            {{-- <p class="font-semibold">₦{{ number_format($budget->spent) }}</p> --}}
+                            <p class="font-semibold">{{ money($budget->spent, 0) }}</p>
                         </div>
 
                         <!-- Budget (Edit link) -->
                         <div class="text-right">
                             <p class="text-gray-400">Budget</p>
                             <a href="{{ route('budgets.edit', $budget->id) }}" class="font-semibold hover:underline">
-                                ₦{{ number_format($budget->amount) }}
+                                {{-- ₦{{ number_format($budget->amount) }} --}}
+                                {{ money($budget->amount, 0) }}
                             </a>
                         </div>
 

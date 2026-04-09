@@ -85,7 +85,9 @@ function formatChange($value) {
     $stats = [
         [
             'title' => 'Total Income',
-            'amount' => '₦' . number_format($totalIncome, 2),
+            // 'amount' => '₦' . number_format($totalIncome, 2),
+            
+            'amount' => money($totalIncome, 2),
             'change' => formatChange($incomeChange),
             'positive' => $incomeChange >= 0,
             'color' => 'green',
@@ -93,15 +95,17 @@ function formatChange($value) {
         ],
         [
             'title' => 'Total Expenses',
-            'amount' => '₦' . number_format($totalExpenses, 2),
+            // 'amount' => '₦' . number_format($totalExpenses, 2),
+            'amount' => money($totalExpenses, 2),
             'change' => formatChange($expenseChange),
-            'positive' => $expenseChange <= 0, // 🔥 LESS expense = GOOD
+            'positive' => $expenseChange <= 0, // 
             'color' => 'red',
             'icon' => 'expenses',
         ],
         [
             'title' => 'Current Balance',
-            'amount' => '₦' . number_format($balance, 2),
+            // 'amount' => '₦' . number_format($balance, 2),
+            'amount' => money($balance, 2),
             'change' => formatChange($balanceChange),
             'positive' => $balanceChange >= 0,
             'color' => 'blue',

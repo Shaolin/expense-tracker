@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
+use Symfony\Component\Intl\Currencies;
 
 class RegisteredUserController extends Controller
 {
@@ -34,12 +35,18 @@ class RegisteredUserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'currency' => ['required', function ($attribute, $value, $fail) {
+        if (!array_key_exists($value, \Symfony\Component\Intl\Currencies::getNames())) {
+            $fail('Invalid currency selected.');
+        }
+    }],
         ]);
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'currency' => $request->currency ?? 'NGN',
         ]);
 
         event(new Registered($user));

@@ -55,7 +55,8 @@
                     
                     {{ $transaction['type'] === 'income' ? '+' : '-' }}
                   
-                    ₦{{ number_format($transaction['amount'], 2) }}
+                    {{-- ₦{{ number_format($transaction['amount'], 2) }} --}}
+                    {{ money($transaction['amount'], 2) }}
                 </div>
             </div>
         @endforeach

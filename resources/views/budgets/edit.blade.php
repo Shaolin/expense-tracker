@@ -51,9 +51,13 @@
             </div>
 
             <!-- Amount -->
-            <div>
+            {{-- <div>
                 <label class="block text-sm font-medium text-gray-200 mb-1">
                     Budget Amount (₦)
+                </label> --}}
+
+                <label class="block text-sm font-medium text-gray-200 mb-1">
+                    Budget Amount ({{ currency_symbol() }})
                 </label>
 
                 <input type="number"

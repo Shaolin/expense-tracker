@@ -61,7 +61,8 @@ $rgb = $colors[$category->color]['rgb'] ?? '34,197,94';
         <span class="text-gray-400">
             {{ $numTransactions }} {{ Str::plural($type, $numTransactions) }}
         </span>
-        <span class="text-white font-semibold">₦{{ number_format($totalAmount, 2) }}</span>
+        {{-- <span class="text-white font-semibold">₦{{ number_format($totalAmount, 2) }}</span> --}}
+        <span class="text-white font-semibold">{{ money($totalAmount, 2) }}</span>
     </div>
 
     <!-- Budget (only for expenses) -->
@@ -69,7 +70,8 @@ $rgb = $colors[$category->color]['rgb'] ?? '34,197,94';
         <div class="mt-3">
             <div class="flex justify-between text-xs text-gray-400 mb-1">
                 <span>Budget</span>
-                <span>{{ round($percent) }}% of ₦{{ number_format($budget, 2) }}</span>
+                {{-- <span>{{ round($percent) }}% of ₦{{ number_format($budget, 2) }}</span> --}}
+                <span>{{ round($percent) }}% of {{ money($totalAmount, 2) }}</span>
             </div>
 
             <div class="w-full bg-gray-800 rounded-full h-2">

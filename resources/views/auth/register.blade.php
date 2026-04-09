@@ -40,6 +40,24 @@
             <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
         </div>
 
+        {{-- Add currency --}}
+        <div class="mt-4">
+            <x-input-label for="currency" :value="__('Currency')" />
+        
+            <select name="currency" id="currency"
+                class="block mt-1 w-full rounded-md bg-gray-900 text-white border-gray-700">
+        
+                @foreach(all_currencies() as $code => $currency)
+                    <option value="{{ $code }}" {{ $code === 'NGN' ? 'selected' : '' }}>
+                        {{ $code }} ({{ $currency['symbol'] }}) - {{ $currency['name'] }}
+                    </option>
+                @endforeach
+        
+            </select>
+        
+            <x-input-error :messages="$errors->get('currency')" class="mt-2" />
+        </div>
+
         <!-- Already registered / Submit -->
         <div class="flex items-center justify-end mt-4">
             <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('login') }}">

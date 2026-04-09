@@ -1,188 +1,79 @@
-<?php
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    
+ 
 
-namespace App\Http\Controllers;
+const chartData = @json($chartData);
 
+// ✅ Ensure numbers are treated as numbers
+const totalSpent = chartData.reduce((sum, item) => sum + Number(item.spent), 0);
 
-use App\Models\Transaction;
-use App\Models\Category;
-use Illuminate\Http\Request;
+const ctx = document.getElementById('expenseChart');
 
-class DashboardController extends Controller
-{
-    public function index(Request $request)
-{
-    $userId = auth()->id();
+if (ctx) {
 
-    // ✅ Month handling (same as categories)
-    $selectedMonth = $request->query('month', now()->format('Y-m'));
-    $parsedMonth = \Carbon\Carbon::parse($selectedMonth);
-    $lastMonth = $parsedMonth->copy()->subMonth();
+    // ✅ Center text plugin (fixed)
+    const centerTextPlugin = {
+        id: 'centerText',
+        beforeDraw(chart) {
+            const { width, height, ctx } = chart;
 
-    // -------------------------
-    // 1. TOTALS (STATS)
-    // -------------------------
-    $totalIncome = \App\Models\Transaction::where('user_id', $userId)
-        ->where('type', 'income')
-        ->whereMonth('date', $parsedMonth->month)
-        ->whereYear('date', $parsedMonth->year)
-        ->sum('amount');
+            ctx.save(); // ✅ always save first
 
-    $totalExpenses = \App\Models\Transaction::where('user_id', $userId)
-        ->where('type', 'expense')
-        ->whereMonth('date', $parsedMonth->month)
-        ->whereYear('date', $parsedMonth->year)
-        ->sum('amount');
+            const fontSize = (height / 140).toFixed(2);
+            ctx.textBaseline = 'middle';
+            ctx.textAlign = 'center';
 
-    $balance = $totalIncome - $totalExpenses;
+             const text = '₦' + totalSpent.toLocaleString();
+            
+            const subText = 'Total Spent';
 
-    $savingsRate = $totalIncome > 0 
-        ? ($balance / $totalIncome) * 100 
-        : 0;
+            // Main text
+            ctx.font = `${fontSize}em sans-serif`;
+            ctx.fillStyle = '#ffffff';
+            ctx.fillText(text, width / 2, height / 2 - 10);
 
-    // -------------------------
-    // 2. STATS ARRAY
-    // -------------------------
-    $stats = [
-        [
-            'title' => 'Total Income',
-            'amount' => '₦' . number_format($totalIncome, 2),
-            'change' => null,
-            'positive' => true,
-            'color' => 'green',
-            'icon' => 'income',
-        ],
-        [
-            'title' => 'Total Expenses',
-            'amount' => '₦' . number_format($totalExpenses, 2),
-            'change' => null,
-            'positive' => false,
-            'color' => 'red',
-            'icon' => 'expenses',
-        ],
-        [
-            'title' => 'Current Balance',
-            'amount' => '₦' . number_format($balance, 2),
-            'change' => null,
-            'positive' => true,
-            'color' => 'blue',
-            'icon' => 'balance',
-        ],
-        [
-            'title' => 'Savings Rate',
-            'amount' => number_format($savingsRate, 1) . '%',
-            'change' => null,
-            'positive' => true,
-            'color' => 'purple',
-            'icon' => 'savings',
-        ],
-    ];
+            // Sub text
+            ctx.font = `${fontSize * 0.6}em sans-serif`;
+            ctx.fillStyle = '#9ca3af';
+            ctx.fillText(subText, width / 2, height / 2 + 15);
 
-    // -------------------------
-    // 3. BUDGET + CHART DATA
-    // -------------------------
-    $budgetItems = \App\Models\Budget::with('category')
-        ->where('user_id', $userId)
-        ->where('month', $selectedMonth)
-        ->get()
-        ->map(function ($budget) use ($userId, $parsedMonth) {
+            ctx.restore(); // ✅ restore after drawing
+        }
+    };
 
-            $spent = \App\Models\Transaction::where('user_id', $userId)
-                ->where('category_id', $budget->category_id)
-                ->where('type', 'expense')
-                ->whereMonth('date', $parsedMonth->month)
-                ->whereYear('date', $parsedMonth->year)
-                ->sum('amount');
-
-            return [
-                'name' => $budget->category->name ?? 'Unknown',
-                'spent' => $spent,
-                'total' => $budget->amount,
-                'color' => $budget->category->color ?? 'blue',
-            ];
-        });
-
-    $chartData = $budgetItems->filter(fn($i) => $i['spent'] > 0)->values();
-
-    // -------------------------
-    // 4. RECENT TRANSACTIONS
-    // -------------------------
-    $transactions = \App\Models\Transaction::with('category')
-        ->where('user_id', $userId)
-        ->whereMonth('date', $parsedMonth->month)
-        ->whereYear('date', $parsedMonth->year)
-        ->latest()
-        ->take(10)
-        ->get()
-        ->map(function ($t) {
-            return [
-                'title' => $t->title,
-                'category' => $t->category->name ?? 'Unknown',
-                'description' => $t->description ?? '',
-                'date' => $t->date->format('M d'),
-                'amount' => $t->amount,
-                'type' => $t->type,
-            ];
-        });
-
-    return view('dashboard', compact(
-        'stats',
-        'budgetItems',
-        'chartData',
-        'transactions',
-        'selectedMonth' // ✅ IMPORTANT
-    ));
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: chartData.map(i => i.name),
+            datasets: [{
+                data: chartData.map(i => Number(i.spent)),
+                backgroundColor: chartData.map(i => {
+                    switch(i.color){
+                        case 'green': return '#22c55e';
+                        case 'red': return '#ef4444';
+                        case 'blue': return '#3b82f6';
+                        case 'purple': return '#8b5cf6';
+                        case 'pink': return '#ec4899';
+                        case 'cyan': return '#06b6d4';
+                        case 'yellow': return '#f59e0b';
+                        default: return '#3b82f6';
+                    }
+                }),
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,              // ✅ important
+            maintainAspectRatio: false,    // ✅ important
+            cutout: '75%',                 // nicer look
+            plugins: {
+                legend: { display: false }
+            }
+        },
+        plugins: [centerTextPlugin] // 🔥 THIS WAS MISSING
+    });
 }
-      
-         
-    
-    
-    
-}
-
-<x-guest-layout>
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
-
-    <form method="POST" action="{{ route('login') }}">
-        @csrf
-
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
-        </div>
-
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
-
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
-
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
-
-        <!-- Remember Me -->
-        <div class="block mt-4">
-            <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" name="remember">
-                <span class="ms-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
-            </label>
-        </div>
-
-        <div class="flex items-center justify-end mt-4">
-            @if (Route::has('password.request'))
-                <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
-                    {{ __('Forgot your password?') }}
-                </a>
-            @endif
-
-            <x-primary-button class="ms-3">
-                {{ __('Log in') }}
-            </x-primary-button>
-        </div>
-    </form>
-</x-guest-layout>
+</script>
+@endpush

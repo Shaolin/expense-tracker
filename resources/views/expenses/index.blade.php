@@ -119,7 +119,9 @@
         
                     <!-- Amount -->
                     <td class="px-6 py-4 text-right font-medium">
-                        ₦{{ number_format($transaction->amount, 2) }}
+                      
+                        {{-- ₦{{ number_format($transaction->amount, 2) }} --}}
+                        {{ money($transaction->amount, 2) }}
                     </td>
         
                     <td class="px-6 py-4 text-right">
