@@ -19,9 +19,14 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+
 Route::get('/', function () {
     return view('welcome');
-});
+})->name('welcome');
+
+Route::view('/about', 'about')->name('about');
+
+Route::view('/contact', 'contact')->name('contact');
 
 Route::get('/dashboard', function () {
     return view('dashboard');

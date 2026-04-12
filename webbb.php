@@ -1,55 +1,79 @@
 @extends('layouts.guest')
 
 @section('content')
-<div class="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100">
+<div class="min-h-screen bg-[#0b0f1a] text-white">
 
-    <!-- HEADER -->
+    <!-- NAVBAR -->
     <header class="w-full px-6 md:px-12 lg:px-20 py-6 flex justify-between items-center">
-        <div class="text-xl font-bold">SawoFlow</div>
+        <div class="text-xl font-bold text-indigo-400">SawoFlow</div>
 
         <div class="flex items-center gap-4">
             @auth
-                <a href="{{ url('/dashboard') }}" class="hover:text-indigo-600">Dashboard</a>
+                <a href="{{ url('/dashboard') }}" class="text-gray-300 hover:text-white">Dashboard</a>
             @else
-                <a href="{{ route('login') }}" class="hover:text-indigo-600">Login</a>
-                <a href="{{ route('register') }}" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">Register</a>
+                <a href="{{ route('login') }}" class="text-gray-300 hover:text-white">Login</a>
+                <a href="{{ route('register') }}"
+                   class="bg-gradient-to-r from-indigo-500 to-purple-500 px-5 py-2 rounded-lg font-medium hover:opacity-90">
+                    Get Started
+                </a>
             @endauth
         </div>
     </header>
 
     <!-- HERO -->
-    <section class="w-full bg-gradient-to-br from-white to-gray-100 dark:from-gray-900 dark:to-gray-800">
-        <div class="max-w-screen-xl mx-auto px-6 md:px-12 lg:px-20 py-24 grid md:grid-cols-2 gap-12 items-center">
+    <section class="text-center px-6 py-20 relative overflow-hidden">
 
-            <div x-data="{ show: false }" x-init="setTimeout(() => show = true, 200)"
-                 x-transition.opacity.duration.700ms x-show="show">
+        <!-- Glow background -->
+        <div class="absolute inset-0 flex justify-center items-center">
+            <div class="w-[500px] h-[500px] bg-indigo-600 opacity-20 blur-[120px] rounded-full"></div>
+        </div>
 
-                <h1 class="text-5xl font-bold leading-tight mb-6">
-                    Smarter Way to
-                    <span class="text-indigo-600">Manage Money</span>
-                </h1>
+        <div class="relative z-10 max-w-4xl mx-auto">
 
-                <p class="text-lg text-gray-600 dark:text-gray-300 mb-8">
-                    Track expenses, manage budgets, and gain powerful insights into your financial life — effortlessly.
-                </p>
+            <!-- Badge -->
+            <div class="inline-block mb-6 px-4 py-1 text-sm rounded-full bg-white/5 border border-white/10 text-gray-300">
+                SAWOFLOW
+            </div>
 
-                <div class="flex gap-4">
-                    @guest
-                        <a href="{{ route('register') }}"
-                           class="px-6 py-3 rounded-xl bg-indigo-600 text-white font-medium shadow hover:bg-indigo-700 transition">
-                            Get Started Free
-                        </a>
-                        <a href="{{ route('login') }}"
-                           class="px-6 py-3 rounded-xl border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition">
-                            Login
-                        </a>
-                    @else
-                        <a href="{{ url('/dashboard') }}"
-                           class="px-6 py-3 rounded-xl bg-indigo-600 text-white font-medium shadow hover:bg-indigo-700 transition">
-                            Go to Dashboard
-                        </a>
-                    @endguest
-                </div>
+            <!-- Heading -->
+            <h1 class="text-4xl md:text-6xl font-extrabold leading-tight">
+                Expense tracking
+                <span class="bg-gradient-to-r from-indigo-400 to-purple-500 bg-clip-text text-transparent">
+                    that just works
+                </span>
+            </h1>
+
+            <!-- Subtext -->
+            <p class="mt-6 text-gray-400 text-lg max-w-2xl mx-auto">
+                Track expenses, manage budgets, and gain powerful insights into your financial life — effortlessly.
+            </p>
+
+            <!-- CTA Buttons -->
+            <div class="mt-10 flex flex-col md:flex-row items-center justify-center gap-4">
+                @guest
+                    <a href="{{ route('register') }}"
+                       class="bg-gradient-to-r from-indigo-500 to-purple-500 px-6 py-3 rounded-lg font-semibold hover:opacity-90">
+                        Start for Free →
+                    </a>
+
+                    <a href="{{ route('login') }}"
+                       class="bg-white/5 border border-white/10 px-6 py-3 rounded-lg text-gray-300 hover:bg-white/10">
+                        Login
+                    </a>
+                @else
+                    <a href="{{ url('/dashboard') }}"
+                       class="bg-gradient-to-r from-indigo-500 to-purple-500 px-6 py-3 rounded-lg font-semibold hover:opacity-90">
+                        Go to Dashboard
+                    </a>
+                @endguest
+            </div>
+
+        </div>
+    </section>
+
+</div>
+
+
 
                 <!-- STATS -->
                 <div class="mt-10 grid grid-cols-3 gap-6 text-center">

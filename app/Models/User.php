@@ -62,4 +62,17 @@ public function organizations()
                 ->withPivot('role')
                 ->withTimestamps();
 }
+protected static function booted()
+{
+    static::created(function ($user) {
+        $org = \App\Models\Organization::create([
+            'name' => $user->name . "'s Workspace",
+            'is_personal' => true,
+        ]);
+
+        $user->organizations()->attach($org->id, [
+            'role' => 'admin',
+        ]);
+    });
+}
 }

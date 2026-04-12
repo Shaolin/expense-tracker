@@ -51,3 +51,15 @@ if (!function_exists('money')) {
         return $symbol . $formatted;
     }
 }
+function category_rgb($color)
+{
+    return [
+        'green' => '34,197,94',
+        'blue' => '59,130,246',
+        'yellow' => '234,179,8',
+        'purple' => '168,85,247',
+        'pink' => '236,72,153',
+        'cyan' => '6,182,212',
+        'red' => '239,68,68',
+    ][$color] ?? '59,130,246';
+}

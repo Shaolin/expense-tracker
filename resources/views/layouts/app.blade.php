@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Expense Tracker</title>
+    <title>SawoFlow | An Expense Tracker</title>
     @vite('resources/css/app.css')
     <script defer src="https://unpkg.com/alpinejs"></script>
     <script>

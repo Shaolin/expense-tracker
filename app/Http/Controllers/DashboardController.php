@@ -11,6 +11,8 @@ class DashboardController extends Controller
 {
     public function index(Request $request)
 {
+
+    //  dd(auth()->user()->organizations->toArray());
     $userId = auth()->id();
 
     // ✅ Month handling (same as categories)

@@ -105,12 +105,35 @@
                     </td>
         
                     <!-- Category -->
-                    <td class="px-6 py-4">
+                    {{-- <td class="px-6 py-4">
                         <span class="flex items-center gap-2">
                             <span class="w-2 h-2 rounded-full bg-green-500"></span>
                             {{ $transaction->category->name }}
                         </span>
-                    </td>
+                    </td> --}}
+                    @php
+$colors = [
+    'green' => '34,197,94',
+    'blue' => '59,130,246',
+    'yellow' => '234,179,8',
+    'purple' => '168,85,247',
+    'pink' => '236,72,153',
+    'cyan' => '6,182,212',
+    'red' => '239,68,68',
+];
+
+$rgb = $colors[$transaction->category->color] ?? '34,197,94';
+@endphp
+
+<td class="px-6 py-4">
+    <span class="flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full"
+              style="background-color: rgba({{ $rgb }}, 1);">
+        </span>
+
+        {{ $transaction->category->name }}
+    </span>
+</td>
         
                     <!-- Description -->
                     <td class="px-6 py-4">

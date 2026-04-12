@@ -1,4 +1,4 @@
-Create a landing page for Expense Tracker - Tracks expenses for individuals and orgarnisation
+Create a home page for Expense Tracker - Tracks expenses for individuals and orgarnisation
 
 
 

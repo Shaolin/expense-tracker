@@ -12,9 +12,21 @@
 <body class="font-sans text-gray-900 antialiased bg-gray-50 dark:bg-gray-900">
 
     <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0">
-        <div>
+        {{-- <div>
             <a href="/">
                 <x-application-logo class="w-20 h-20 fill-current text-gray-500" />
+            </a>
+        </div> --}}
+        {{-- <div class="flex items-center">
+            <a href="{{ route('welcome') }}" class="text-2xl font-bold tracking-tight">
+                <span class="text-indigo-600">Sawo</span><span class="text-gray-900 dark:text-white">Flow</span>
+            </a>
+        </div> --}}
+        <div class="flex items-center">
+            <a href="{{ route('welcome') }}" class="text-2xl font-extrabold tracking-tight flex items-center gap-1">
+                <span class="text-indigo-600">Sawo</span>
+                <span class="text-gray-900 dark:text-white">Flow</span>
+                <span class="w-2 h-2 bg-indigo-600 rounded-full ml-1"></span>
             </a>
         </div>
 

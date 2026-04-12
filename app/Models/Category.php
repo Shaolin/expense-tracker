@@ -69,4 +69,8 @@ public function transactions()
 {
     return $this->hasMany(\App\Models\Transaction::class);
 }
+public function getColorAttribute($value)
+{
+    return $value ?? 'blue';
+}
 }

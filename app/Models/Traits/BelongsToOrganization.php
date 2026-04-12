@@ -18,13 +18,18 @@ trait BelongsToOrganization
         });
 
         // GLOBAL SCOPE (isolation)
+       
         static::addGlobalScope('organization', function (Builder $builder) {
-            if (Auth::check()) {
-                $organizationId = session('organization_id')
-                    ?? Auth::user()->organizations()->first()->id;
 
-                $builder->where('organization_id', $organizationId);
-            }
-        });
+    if (Auth::check()) {
+
+        $organizationId = session('organization_id')
+            ?? optional(Auth::user()->organizations()->first())->id;
+
+        if ($organizationId) {
+            $builder->where('organization_id', $organizationId);
+        }
+    }
+});
     }
 }

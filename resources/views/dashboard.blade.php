@@ -2,6 +2,7 @@
 
 @section('content')
 <div class="p-6 space-y-6 bg-black min-h-screen">
+ 
 
     <!-- Header -->
     {{-- <div class="mb-6">

@@ -7,6 +7,8 @@
     'icon'
 ])
 
+
+
 @php
 $colorMap = [
     'green' => ['bg' => 'bg-green-500', 'rgb' => '34,197,94'],
@@ -24,6 +26,8 @@ $accentRGB = $colorMap[$color]['rgb'] ?? '59,130,246';
     style="transition: box-shadow 0.3s ease;"
     onmouseover="this.style.boxShadow='0 0 25px rgba({{ $accentRGB }},0.45)'"
     onmouseout="this.style.boxShadow=''"
+    @php
+
 >
     <!-- Accent bar -->
     <div class="{{ $accentColor }} w-1"></div>
@@ -51,4 +55,5 @@ $accentRGB = $colorMap[$color]['rgb'] ?? '59,130,246';
     <div class="p-6 flex items-start">
         <x-icon :name="$icon" />
     </div>
+    
 </div>
