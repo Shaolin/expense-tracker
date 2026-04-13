@@ -175,15 +175,16 @@
                     <div class="grid grid-cols-3 gap-4 mb-6">
                         <div class="p-4 rounded-xl bg-white/5">
                             <p class="text-xs text-gray-400">Balance</p>
-                            <h3 class="text-lg font-semibold">NGN12,450</h3>
+                            <h3 class="text-lg font-semibold">₦12,450</h3>
                         </div>
                         <div class="p-4 rounded-xl bg-white/5">
                             <p class="text-xs text-gray-400">Expenses</p>
-                            <h3 class="text-lg font-semibold">$2,340</h3>
+                            <h3 class="text-lg font-semibold">₦2,340</h3>
                         </div>
                         <div class="p-4 rounded-xl bg-white/5">
                             <p class="text-xs text-gray-400">Budget Left</p>
-                            <h3 class="text-lg font-semibold">$5,110</h3>
+                            
+                            <h3 class="text-lg font-semibold">₦5,110</h3>
                         </div>
                     </div>
 
@@ -284,7 +285,7 @@
                     <p class="text-gray-400 mb-6">Perfect for individuals and small teams</p>
 
                     <div class="text-4xl font-bold mb-6 text-white">
-                        $0
+                        ₦0
                         <span class="text-sm text-gray-400">/forever</span>
                     </div>
 
