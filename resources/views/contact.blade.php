@@ -5,7 +5,7 @@
 
     <!-- HEADER -->
     <header class="w-full px-6 md:px-12 lg:px-20 py-6 flex justify-between items-center">
-        <div class="text-xl font-bold">YSawoFlow</div>
+        <div class="text-xl font-bold">SawoFlow</div>
 
         <div class="flex items-center gap-4">
             <a href="{{ route('welcome') }}" class="hover:text-indigo-600 transition">Home</a>
@@ -38,6 +38,17 @@
         <div class="max-w-4xl mx-auto px-6 md:px-12 lg:px-20">
 
             <div class="grid md:grid-cols-2 gap-8">
+                <!-- CALL US -->
+<div class="p-6 rounded-2xl shadow hover:shadow-lg transition bg-gray-50 dark:bg-gray-900">
+    <div class="text-3xl mb-4">📞</div>
+    <h3 class="text-xl font-semibold mb-2">Call Us</h3>
+    <p class="text-gray-600 dark:text-gray-400 mb-3">
+        Prefer to talk? Give us a call.
+    </p>
+    <a href="tel:+2347030920009" class="text-indigo-600 hover:underline">
+        +234 703 092 0009
+    </a>
+</div>
 
                 <!-- EMAIL -->
                 <div class="p-6 rounded-2xl shadow hover:shadow-lg transition bg-gray-50 dark:bg-gray-900">

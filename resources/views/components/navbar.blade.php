@@ -28,6 +28,12 @@
         <span class="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg text-sm">
             Personal Finance
         </span>
+        <button
+    @click="toggle()"
+    class="px-3 py-1 rounded-lg bg-gray-200 dark:bg-gray-700 text-sm text-gray-800 dark:text-white hover:opacity-80 transition"
+>
+    <span x-text="dark ? '☀️ Light' : '🌙 Dark'"></span>
+</button>
 
         <!-- Profile Dropdown -->
         <div class="relative" x-data="{ open: false }">
