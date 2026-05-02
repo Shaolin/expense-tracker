@@ -49,8 +49,17 @@
                 @endforeach
             </select>
 
-            <input type="date" name="date" value="{{ request('date') }}"
-                class="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-transparent">
+            {{-- <input type="date" name="date" value="{{ request('date') }}"
+                class="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-transparent"> --}}
+                <input 
+    type="date" 
+    name="date" 
+    value="{{ request('date') }}"
+    class="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-700 
+           bg-white dark:bg-gray-800 
+           text-gray-900 dark:text-white
+           [color-scheme:dark]"
+>
 
             <input type="month" name="month"
                 value="{{ request('month', now()->format('Y-m')) }}"
