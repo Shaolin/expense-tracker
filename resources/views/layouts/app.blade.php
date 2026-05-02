@@ -3,8 +3,9 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SawoFlow | An Expense Tracker</title>
-
+   
     @vite('resources/css/app.css')
     <script defer src="https://unpkg.com/alpinejs"></script>
 
