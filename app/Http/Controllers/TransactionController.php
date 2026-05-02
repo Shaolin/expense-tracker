@@ -36,13 +36,22 @@ class TransactionController extends Controller
     /**
      * Show form to create a transaction
      */
+    // public function createExpense()
+    // {
+    //     $categories = Category::all();
+
+    //     return view('expenses.create', compact('categories'));
+    // }
+
     public function createExpense()
-    {
-        $categories = Category::all();
+{
+    $categories = Category::where('user_id', auth()->id())
+        ->where('type', 'expense') // 🔥 filter ONLY expense
+        ->orderBy('name')
+        ->get();
 
-        return view('expenses.create', compact('categories'));
-    }
-
+    return view('expenses.create', compact('categories'));
+}
     /**
      * Store a new transaction
      */
@@ -90,7 +99,11 @@ class TransactionController extends Controller
             abort(403);
         }
 
-        $categories = Category::all();
+        // $categories = Category::all();
+        $categories = Category::where('user_id', auth()->id())
+    ->where('type', 'expense')
+    ->orderBy('name')
+    ->get();
 
         return view('expenses.edit', compact('transaction', 'categories'));
     }

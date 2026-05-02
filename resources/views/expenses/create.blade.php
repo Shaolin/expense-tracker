@@ -35,6 +35,13 @@
                             {{ $category->name }}
                         </option>
                     @endforeach
+                    
+                    {{-- @foreach($categories as $category)
+                        <option value="{{ $category->id }}"
+                            {{ request('category_id') == $category->id ? 'selected' : '' }}>
+                            {{ $category->name }}
+                        </option>
+                    @endforeach --}}
                 </select>
 
                 @error('category_id')

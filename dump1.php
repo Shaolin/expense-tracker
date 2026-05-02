@@ -1,35 +1,7 @@
-Create a home page for Expense Tracker - Tracks expenses for individuals and orgarnisation
-
-
-
-SECTIONS:
-- Hero with headline, subheading, CTA, and example screenshot
-- 4 features with icons
-- Pricing: Free and Pro tiers
-- Footer with links
-
-TECHNICAL:
-- HTML with vanilla CSS and JS
-- Smooth scroll navigation
-- Mobile responsive
-- Gradient background in hero
-
-DESIGN:
-- Developer-focused aesthetic (think GitHub or VS Code vibes)
-- Dark mode friendly
-- Use purple/blue gradient accent colors
-- Clean, modern typography
-
-Include sample content and make all buttons functional (scroll to sections).
-
 @extends('layouts.app')
 
 @section('content')
-{{-- <div class="p-6 space-y-6 bg-black min-h-screen"> --}}
-
-    {{-- <div class="p-6 space-y-6 bg-white text-gray-900 dark:bg-black dark:text-white min-h-screen"> --}}
-
-        <div class="p-6 space-y-6 min-h-screen">
+<div class="p-6 space-y-6 bg-black min-h-screen">
  
 
     <!-- Header -->
@@ -42,24 +14,19 @@ Include sample content and make all buttons functional (scroll to sections).
 
         <!-- Title -->
         <div>
-            {{-- <h1 class="text-3xl font-bold text-white">Dashboard</h1> --}}
-            <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
-            {{-- <p class="text-gray-400">Overview of your financial activity</p> --}}
-            <p class="text-gray-500 dark:text-gray-400">Overview of your financial activity</p>
+            <h1 class="text-3xl font-bold text-white">Dashboard</h1>
+            <p class="text-gray-400">Overview of your financial activity</p>
         </div>
     
         <!-- Month Selector -->
         <form method="GET" action="{{ route('dashboard') }}" class="flex items-center gap-4">
-            {{-- <label class="text-gray-400 text-sm">Month:</label> --}}
-            <label class="text-gray-500 dark:text-gray-400 text-sm">Month:</label>
+            <label class="text-gray-400 text-sm">Month:</label>
     
             <input 
                 type="month" 
                 name="month" 
                 value="{{ $selectedMonth ?? now()->format('Y-m') }}"
-                {{-- class="px-3 py-2 rounded-lg bg-gray-800 text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                onchange="this.form.submit()" --}}
-                class="px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                class="px-3 py-2 rounded-lg bg-gray-800 text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 onchange="this.form.submit()"
             >
         </form>
@@ -130,26 +97,14 @@ if (ctx) {
             const subText = 'Total Spent';
 
             // Main text
-            // ctx.font = `${fontSize}em sans-serif`;
-            // ctx.fillStyle = '#ffffff';
-            // ctx.fillText(text, width / 2, height / 2 - 10);
+            ctx.font = `${fontSize}em sans-serif`;
+            ctx.fillStyle = '#ffffff';
+            ctx.fillText(text, width / 2, height / 2 - 10);
 
-            // // Sub text
-            // ctx.font = `${fontSize * 0.6}em sans-serif`;
-            // ctx.fillStyle = '#9ca3af';
-            // ctx.fillText(subText, width / 2, height / 2 + 15);
-
-            const isDark = document.documentElement.classList.contains('dark');
-
-// Main text
-ctx.font = `${fontSize}em sans-serif`;
-ctx.fillStyle = isDark ? '#ffffff' : '#111827';
-ctx.fillText(text, width / 2, height / 2 - 10);
-
-// Sub text
-ctx.font = `${fontSize * 0.6}em sans-serif`;
-ctx.fillStyle = isDark ? '#9ca3af' : '#6b7280';
-ctx.fillText(subText, width / 2, height / 2 + 15);
+            // Sub text
+            ctx.font = `${fontSize * 0.6}em sans-serif`;
+            ctx.fillStyle = '#9ca3af';
+            ctx.fillText(subText, width / 2, height / 2 + 15);
 
             ctx.restore();
         }

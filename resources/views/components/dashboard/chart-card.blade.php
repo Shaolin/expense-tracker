@@ -1,7 +1,8 @@
 @props(['data' => []])
 
 
-    <div class="bg-gray-900 rounded-2xl p-6 shadow-lg text-white">
+    {{-- <div class="bg-gray-900 rounded-2xl p-6 shadow-lg text-white"> --}}
+    <div class="bg-white dark:bg-gray-900 text-gray-900 dark:text-white rounded-2xl p-6 shadow-lg text-white">
     <h3 class="text-lg font-semibold mb-4">Expenses by Category</h3>
 
     <div class="flex flex-col lg:flex-row items-center justify-center gap-6">

@@ -34,6 +34,12 @@
 >
     <span x-text="dark ? '☀️ Light' : '🌙 Dark'"></span>
 </button>
+{{-- <button @click="sidebarOpen = true" class="md:hidden text-white text-2xl">
+    ☰
+</button> --}}
+<button @click="sidebarOpen = true" class="md:hidden text-2xl">
+    ☰
+</button>
 
         <!-- Profile Dropdown -->
         <div class="relative" x-data="{ open: false }">

@@ -2,7 +2,8 @@
 
 <div 
     x-data="{ open: false, selected: {} }"
-    class="bg-gray-900 rounded-2xl p-6 shadow-lg text-white"
+    {{-- class="bg-gray-900 rounded-2xl p-6 shadow-lg text-white" --}}
+    class="bg-white dark:bg-gray-900 text-gray-900 dark:text-white rounded-2xl p-6 shadow-lg text-white"
 >
 
     <!-- Header -->
