@@ -51,14 +51,13 @@
 
             {{-- <input type="date" name="date" value="{{ request('date') }}"
                 class="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-transparent"> --}}
-                <input 
+  
+<input 
     type="date" 
-    name="date" 
+    name="date"
     value="{{ request('date') }}"
-    class="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-700 
-           bg-white dark:bg-gray-800 
-           text-gray-900 dark:text-white
-           [color-scheme:dark]"
+    class="px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-white w-full"
+    style="color-scheme: dark;"
 >
 
             <input type="month" name="month"
