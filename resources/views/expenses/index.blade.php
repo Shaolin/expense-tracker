@@ -52,13 +52,19 @@
             {{-- <input type="date" name="date" value="{{ request('date') }}"
                 class="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-transparent"> --}}
   
-                <input 
-                type="date" 
-                name="date"
-                value="{{ request('date') }}"
-                class="px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 w-full"
-                style="color-scheme: dark; color: white;"
-            >
+                <div>
+                    <label class="block text-sm mb-1 text-gray-600 dark:text-gray-300">
+                        Date
+                    </label>
+                
+                    <input 
+                        type="date" 
+                        name="date"
+                        value="{{ request('date') }}"
+                        class="px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 w-full text-white"
+                        style="color-scheme: dark;"
+                    >
+                </div>
 
             <input type="month" name="month"
                 value="{{ request('month', now()->format('Y-m')) }}"
