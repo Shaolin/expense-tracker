@@ -28,106 +28,101 @@
     $nextMonth = \Carbon\Carbon::parse($selectedMonth)->addMonth()->format('Y-m');
     @endphp
 
-    <div class="flex flex-wrap items-center gap-3">
-        <a href="{{ route('income.index', array_merge(request()->except('page'), ['month' => $prevMonth])) }}"
-           class="px-3 py-1 bg-gray-700 text-white rounded-lg">
-            ←
-        </a>
+<div class="flex flex-wrap items-center gap-3">
+    <a href="{{ route('income.index', array_merge(request()->except('page'), ['month' => $prevMonth])) }}"
+       class="px-3 py-1 bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-white rounded-lg">
+        ←
+    </a>
 
-        <span class="text-sm md:text-base text-white font-semibold">
-            {{ \Carbon\Carbon::parse($selectedMonth)->format('F Y') }}
-        </span>
+    <span class="text-sm md:text-base text-gray-800 dark:text-gray-200 font-semibold">
+        {{ \Carbon\Carbon::parse($selectedMonth)->format('F Y') }}
+    </span>
 
-        <a href="{{ route('income.index', array_merge(request()->except('page'), ['month' => $nextMonth])) }}"
-           class="px-3 py-1 bg-gray-700 text-white rounded-lg">
-            →
-        </a>
-    </div>
+    <a href="{{ route('income.index', array_merge(request()->except('page'), ['month' => $nextMonth])) }}"
+       class="px-3 py-1 bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-white rounded-lg">
+        →
+    </a>
+</div>
 
     <!-- Stats Card (DARK preserved) -->
-    <div class="bg-gray-900 border border-gray-800 p-4 md:p-6 rounded-2xl relative overflow-hidden">
+    <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-4 md:p-6 rounded-2xl relative overflow-hidden shadow-md">
+    
         <div class="absolute left-0 top-0 h-full w-1.5 bg-green-500"></div>
-
+    
         <div class="flex items-center gap-4 pl-2">
-            <div class="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-full bg-green-900">
+            <div class="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-full bg-green-100 dark:bg-green-900">
                 📈
             </div>
-
+    
             <div>
-                <p class="text-sm text-gray-400">
+                <p class="text-sm text-gray-500 dark:text-gray-400">
                     Total Income ({{ \Carbon\Carbon::parse($selectedMonth)->format('F Y') }})
                 </p>
-                <h2 class="text-xl md:text-3xl font-bold text-white mt-1">
+    
+                <h2 class="text-xl md:text-3xl font-bold text-gray-900 dark:text-white mt-1">
                     {{ money($totalIncomeThisMonth, 2) }}
                 </h2>
             </div>
         </div>
     </div>
 
-    <!-- Filters (DARK preserved) -->
-    <form method="GET" action="{{ route('income.index') }}">
-        <div class="bg-gray-900 border border-gray-800 p-4 rounded-xl space-y-4">
+    <!-- Filters  -->
 
-            <input 
-                type="text" 
-                name="search"
-                value="{{ request('search') }}"
-                placeholder="Search..."
-                class="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-700 text-white focus:ring-2 focus:ring-green-500 outline-none"
-            >
+    <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-4 rounded-xl space-y-4 shadow-sm">
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
-
-                <select name="category_id"
-                    class="px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-white">
-                    <option value="">All Sources</option>
-                    @foreach($categories as $category)
-                        <option value="{{ $category->id }}"
-                            {{ request('category_id') == $category->id ? 'selected' : '' }}>
-                            {{ $category->name }}
-                        </option>
-                    @endforeach
-                </select>
-
-                {{-- <input type="date" name="date"
+        <input 
+            type="text" 
+            name="search"
+            value="{{ request('search') }}"
+            placeholder="Search..."
+            class="w-full px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-white focus:ring-2 focus:ring-green-500 outline-none"
+        >
+    
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+    
+            <select name="category_id"
+                class="px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-white">
+                <option value="">All Sources</option>
+                @foreach($categories as $category)
+                    <option value="{{ $category->id }}"
+                        {{ request('category_id') == $category->id ? 'selected' : '' }}>
+                        {{ $category->name }}
+                    </option>
+                @endforeach
+            </select>
+    
+            <!-- Date -->
+            <div>
+                <label class="block text-sm mb-1 text-gray-600 dark:text-gray-300">
+                    Date
+                </label>
+    
+                <input 
+                    type="date" 
+                    name="date"
                     value="{{ request('date') }}"
-                    class="px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-white"> --}}
-                    {{-- <input 
-    type="date" 
-    name="date"
-    value="{{ request('date') }}"
-    class="px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 w-full"
-    style="color-scheme: dark; color: white;"
-> --}}
-<div>
-    <label class="block text-sm mb-1 text-gray-600 dark:text-gray-300">
-        Date
-    </label>
-
-    <input 
-        type="date" 
-        name="date"
-        value="{{ request('date') }}"
-        class="px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 w-full text-white"
-        style="color-scheme: dark;"
-    >
-</div>
-
-                <input type="month" name="month"
-                    value="{{ request('month', now()->format('Y-m')) }}"
-                    class="px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-white">
-
-                <button class="px-4 py-2 bg-green-600 text-white rounded-lg w-full">
-                    Filter
-                </button>
-
-                <a href="{{ route('income.index') }}" 
-                   class="px-4 py-2 bg-gray-600 text-white rounded-lg text-center w-full">
-                    Reset
-                </a>
+                    class="px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 w-full text-gray-800 dark:text-white"
+                    style="color-scheme: light dark;"
+                >
             </div>
+    
+            <input type="month" name="month"
+                value="{{ request('month', now()->format('Y-m')) }}"
+                class="px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-white">
+    
+            <button class="px-4 py-2 bg-green-600 text-white rounded-lg w-full">
+                Filter
+            </button>
+    
+            <a href="{{ route('income.index') }}" 
+               
+
+               class="px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-lg text-center w-full hover:bg-gray-200 dark:hover:bg-gray-700 transition">
+                Reset
+            </a>
         </div>
-    </form>
+    </div>
+   
 
     {{-- ================= MOBILE CARDS ================= --}}
     <div class="md:hidden space-y-4">
@@ -147,19 +142,21 @@
         $rgb = $colors[$categoryColor] ?? '34,197,94';
         @endphp
 
-        <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 space-y-3">
+        
+            <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-4 space-y-3 shadow-sm">
 
             <!-- Date + Amount -->
             <div class="flex justify-between">
                 <div>
-                    <p class="text-xs text-gray-400">Date</p>
-                    <p class="text-sm text-white">
+                    
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Date</p>
+                    <p class="text-sm text-gray-800 dark:text-white">
                         {{ \Carbon\Carbon::parse($transaction->date)->format('M d, Y') }}
                     </p>
                 </div>
 
                 <div class="text-right">
-                    <p class="text-xs text-gray-400">Amount</p>
+                    <p class="text-sm text-gray-700 dark:text-gray-300">Amount</p>
                     <p class="text-green-400 font-semibold">
                         {{ money($transaction->amount, 2) }}
                     </p>
@@ -168,8 +165,9 @@
 
             <!-- Source -->
             <div>
-                <p class="text-xs text-gray-400">Source</p>
-                <div class="flex items-center gap-2 text-sm text-white">
+                <p class="text-sm text-gray-700 dark:text-gray-300">Source</p>
+                
+                <div class="flex items-center gap-2 text-sm text-gray-800 dark:text-gray-200">
                     <span class="w-2 h-2 rounded-full"
                           style="background-color: rgba({{ $rgb }}, 1);"></span>
                     {{ $transaction->category->name ?? 'N/A' }}
@@ -178,8 +176,8 @@
 
             <!-- Description -->
             <div>
-                <p class="text-xs text-gray-400">Description</p>
-                <p class="text-sm text-gray-300">
+                <p class="text-sm text-gray-700 dark:text-gray-300">Description</p>
+                <p class="text-sm text-gray-700 dark:text-gray-300">
                     {{ $transaction->description ?? '-' }}
                 </p>
             </div>
@@ -202,14 +200,16 @@
         </div>
 
         @empty
-        <div class="text-center py-10 text-gray-500">
+        
+            <div class="text-center py-10 text-gray-500 dark:text-gray-400">
             No income records found.
         </div>
         @endforelse
     </div>
 
     {{-- ================= DESKTOP TABLE ================= --}}
-    <div class="hidden md:block overflow-x-auto bg-gray-900 border border-gray-800 rounded-xl">
+    
+        <div class="hidden md:block overflow-x-auto bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl shadow-sm">
         <x-table>
             <x-slot name="head">
                 <th class="px-4 py-3">Date</th>
@@ -221,7 +221,8 @@
 
             <x-slot name="body">
                 @foreach($transactions as $transaction)
-                <tr class="hover:bg-gray-800">
+           
+                    <tr class="hover:bg-gray-100 dark:hover:bg-gray-800">
 
                     <td class="px-4 py-3">
                         {{ \Carbon\Carbon::parse($transaction->date)->format('M d, Y') }}

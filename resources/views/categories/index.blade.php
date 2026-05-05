@@ -3,17 +3,22 @@
 @section('content')
 <div class="p-6 space-y-6">
 
-    <!-- Month Selector -->
+   <!-- Month Selector -->
 <form method="GET" action="{{ route('categories.index') }}" class="mb-6 flex items-center gap-4">
-    <label for="month" class="text-gray-400">Select Month:</label>
+
+    <label for="month" class="text-gray-600 dark:text-gray-400">
+        Select Month:
+    </label>
+
     <input 
         type="month" 
         id="month" 
         name="month" 
         value="{{ $selectedMonth ?? now()->format('Y-m') }}"
-        class="px-3 py-2 rounded-lg bg-gray-800 text-white border border-gray-700"
+        class="px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-white border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500"
         onchange="this.form.submit()"
     >
+
 </form>
 
     <!-- Header -->
@@ -49,7 +54,10 @@
     </div>
 
     <!-- Income Section -->
-    <h2 class="text-xl font-semibold text-white mt-10">Income</h2>
+    {{-- <h2 class="text-xl font-semibold text-white mt-10">Income</h2> --}}
+    <h2 class="text-xl font-semibold text-gray-900 dark:text-white mt-10">
+        Income
+    </h2>
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         @forelse($incomeCategories as $category)
             <x-category.card 

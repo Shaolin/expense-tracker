@@ -68,79 +68,98 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
-const chartData = @json($chartData);
-
-//  Pass currency symbol from Laravel
-const currencySymbol = "{{ currency_symbol() }}";
-
-//  Ensure numbers are treated as numbers
-const totalSpent = chartData.reduce((sum, item) => sum + Number(item.spent), 0);
-
-const ctx = document.getElementById('expenseChart');
-
-if (ctx) {
-
-    //  Center text plugin (fixed)
-    const centerTextPlugin = {
-        id: 'centerText',
-        beforeDraw(chart) {
-            const { width, height, ctx } = chart;
-
-            ctx.save();
-
-            const fontSize = (height / 140).toFixed(2);
-            ctx.textBaseline = 'middle';
-            ctx.textAlign = 'center';
-
-            //  Dynamic currency
-            const text = currencySymbol + totalSpent.toLocaleString();
-            const subText = 'Total Spent';
-
-            // Main text
-            ctx.font = `${fontSize}em sans-serif`;
-            ctx.fillStyle = '#ffffff';
-            ctx.fillText(text, width / 2, height / 2 - 10);
-
-            // Sub text
-            ctx.font = `${fontSize * 0.6}em sans-serif`;
-            ctx.fillStyle = '#9ca3af';
-            ctx.fillText(subText, width / 2, height / 2 + 15);
-
-            ctx.restore();
-        }
-    };
-
-    new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-            labels: chartData.map(i => i.name),
-            datasets: [{
-                data: chartData.map(i => Number(i.spent)),
-                backgroundColor: chartData.map(i => {
-                    switch(i.color){
-                        case 'green': return '#22c55e';
-                        case 'red': return '#ef4444';
-                        case 'blue': return '#3b82f6';
-                        case 'purple': return '#8b5cf6';
-                        case 'pink': return '#ec4899';
-                        case 'cyan': return '#06b6d4';
-                        case 'yellow': return '#f59e0b';
-                        default: return '#3b82f6';
-                    }
-                }),
-                borderWidth: 0
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            cutout: '75%',
-            plugins: {
-                legend: { display: false }
+    const chartData = @json($chartData);
+    
+    const currencySymbol = "{{ currency_symbol() }}";
+    const totalSpent = chartData.reduce((sum, item) => sum + Number(item.spent), 0);
+    
+    const ctx = document.getElementById('expenseChart');
+    
+    //  Always get latest theme state
+    function isDarkMode() {
+        return document.documentElement.classList.contains('dark');
+    }
+    
+    //  Dynamic colors that react to theme
+    function getTextColor() {
+        return isDarkMode() ? '#ffffff' : '#111827';
+    }
+    
+    function getSubTextColor() {
+        return isDarkMode() ? '#9ca3af' : '#6b7280';
+    }
+    
+    if (ctx) {
+    
+        const centerTextPlugin = {
+            id: 'centerText',
+            beforeDraw(chart) {
+                const { width, height, ctx } = chart;
+    
+                ctx.save();
+    
+                const fontSize = (height / 140).toFixed(2);
+                ctx.textBaseline = 'middle';
+                ctx.textAlign = 'center';
+    
+                const text = currencySymbol + totalSpent.toLocaleString();
+                const subText = 'Total Spent';
+    
+                // Main text
+                ctx.font = `${fontSize}em sans-serif`;
+                ctx.fillStyle = getTextColor();
+                ctx.fillText(text, width / 2, height / 2 - 10);
+    
+                // Sub text
+                ctx.font = `${fontSize * 0.6}em sans-serif`;
+                ctx.fillStyle = getSubTextColor();
+                ctx.fillText(subText, width / 2, height / 2 + 15);
+    
+                ctx.restore();
             }
-        },
-        plugins: [centerTextPlugin]
-    });
-}
-</script>
+        };
+    
+        const chart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: chartData.map(i => i.name),
+                datasets: [{
+                    data: chartData.map(i => Number(i.spent)),
+                    backgroundColor: chartData.map(i => {
+                        switch(i.color){
+                            case 'green': return '#22c55e';
+                            case 'red': return '#ef4444';
+                            case 'blue': return '#3b82f6';
+                            case 'purple': return '#8b5cf6';
+                            case 'pink': return '#ec4899';
+                            case 'cyan': return '#06b6d4';
+                            case 'yellow': return '#f59e0b';
+                            default: return '#3b82f6';
+                        }
+                    }),
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '75%',
+                plugins: {
+                    legend: { display: false }
+                }
+            },
+            plugins: [centerTextPlugin]
+        });
+    
+        // OPTIONAL (important fix for live toggle systems)
+        const observer = new MutationObserver(() => {
+            chart.update();
+        });
+    
+        observer.observe(document.documentElement, {
+            attributes: true,
+            attributeFilter: ['class']
+        });
+    }
+    </script>
 @endpush
